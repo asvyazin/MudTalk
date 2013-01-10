@@ -3,8 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'parser',
-		'textAttributeParser',
-		'textBuffer'
+		'textAttributeParser'
 	],
 	#category : #'MudTalk-Client'
 }
@@ -34,22 +33,15 @@ MudTalkClientEscapeParser >> escapeParser [
 	^ (self CSI, self P star, self I star, self F) token: MudTalkEscapeToken
 ]
 
-{ #category : #initialization }
-MudTalkClientEscapeParser >> initialize [
-	textBuffer := ''
-]
-
 { #category : #base }
 MudTalkClientEscapeParser >> newParser [
-	^ (self escapeParser / #any asParser) plus
+	^ StreamParser on: ((self escapeParser / #any asParser) plus)
 ]
 
 { #category : #base }
 MudTalkClientEscapeParser >> parse: aText [
-	| petitStream tokens processor |
-	petitStream := (textBuffer, aText) asPetitStream.
-	tokens := self parser parse: petitStream.
-	textBuffer := String withAll: petitStream upToEnd.
+	| tokens processor |
+	tokens := self parser parse: aText.
 	processor := MudTalkClientEscapeProcessor new.
 	tokens do: [ :token | token processEscapeTokenWith: processor ].
 	^ processor currentText
