@@ -13,6 +13,11 @@ MudTalkClientKeyBinding >> action [
 	^ action
 ]
 
+{ #category : #accessing }
+MudTalkClientKeyBinding >> key [
+	^ key
+]
+
 { #category : #initialization }
 MudTalkClientKeyBinding >> key: aKey action: anAction [
 	key := aKey.
