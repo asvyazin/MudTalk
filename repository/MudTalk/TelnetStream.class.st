@@ -51,7 +51,7 @@ TelnetStream class >> on: aSource [
 
 { #category : #telnet }
 TelnetStream class >> subnegoEnd [
-	^ {TelnetStream IAC. TelnetStream SE}
+	^ {self IAC. self SE}
 ]
 
 { #category : #reading }
@@ -68,10 +68,10 @@ TelnetStream >> iacDontNext [
 TelnetStream >> iacNext [
 	| c |
 	c := stream next.
-	(c = TelnetStream IAC)
+	(c = self class IAC)
 		ifTrue: [
-			charBuffer add: TelnetStream IAC.
-			charBuffer isFull isTrue: [ ^ charBuffer clear ].
+			charBuffer add: self class IAC.
+			charBuffer isFull ifTrue: [ ^ charBuffer clear ].
 			^ self next ]
 		ifFalse: [
 			iacHandlers at: c
@@ -84,7 +84,7 @@ TelnetStream >> iacNext [
 TelnetStream >> iacSbNext [
 	| option data |
 	option := self readOption.
-	data := stream upToAll: TelnetStream subnegoEnd.
+	data := stream upToAll: self class subnegoEnd.
 	^ TelnetSubnego option: option data: data
 ]
 
@@ -103,11 +103,11 @@ TelnetStream >> initialize [
 	super initialize.
 	charBuffer := TelnetCharBuffer new.
 	iacHandlers := Dictionary new.
-	iacHandlers at: TelnetStream DO put: [ self iacDoNext ].
-	iacHandlers at: TelnetStream DONT put: [ self iacDontNext ].
-	iacHandlers at: TelnetStream WILL put: [ self iacWillNext ].
-	iacHandlers at: TelnetStream WONT put: [ self iacWontNext ].
-	iacHandlers at: TelnetStream SB put: [ self iacSbNext ].
+	iacHandlers at: self class DO put: [ self iacDoNext ].
+	iacHandlers at: self class DONT put: [ self iacDontNext ].
+	iacHandlers at: self class WILL put: [ self iacWillNext ].
+	iacHandlers at: self class WONT put: [ self iacWontNext ].
+	iacHandlers at: self class SB put: [ self iacSbNext ].
 ]
 
 { #category : #reading }
@@ -115,7 +115,7 @@ TelnetStream >> next [
 	| c |
 	[ stream isDataAvailable ifFalse: [ charBuffer isEmpty ifFalse: [ ^ charBuffer clear ] ].
 		c := stream next.
-		(c = TelnetStream IAC) ifTrue: [ ^ self iacNext ].
+		(c = self class IAC) ifTrue: [ ^ self iacNext ].
 		charBuffer add: c.
 		charBuffer isFull ifTrue: [ ^ charBuffer clear ] ] repeat.
 ]

@@ -2,7 +2,6 @@ Class {
 	#name : #MudTalkConnectionToServer,
 	#superclass : #Object,
 	#instVars : [
-		'readingProcess',
 		'events',
 		'telnetStream',
 		'stream'
@@ -13,8 +12,9 @@ Class {
 { #category : #initialization }
 MudTalkConnectionToServer >> connectTo: aHost port: aPort [
 	stream := SocketStream openConnectionToHost: aHost port: aPort.
+	stream noTimeout.
 	telnetStream := TelnetStream on: stream.
-	readingProcess := [ self networkReadLoop ] forkNamed: 'MUD client network reading process'.
+	[ self networkReadLoop ] forkNamed: 'MUD client network reading process'
 ]
 
 { #category : #server }

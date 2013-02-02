@@ -1,9 +1,6 @@
 Class {
 	#name : #MudTalkClientTerminalTypeHandler,
-	#superclass : #Object,
-	#instVars : [
-		'server'
-	],
+	#superclass : #MudTalkClientEnabledOptionHandler,
 	#category : #'MudTalk-Client'
 }
 
@@ -18,33 +15,15 @@ MudTalkClientTerminalTypeHandler >> clientTerminalType [
 ]
 
 { #category : #telnet }
-MudTalkClientTerminalTypeHandler >> do: option [ 
-	(option = TelnetOption terminalType) ifTrue: [ self server will: TelnetOption terminalType ]
-]
-
-{ #category : #accessing }
-MudTalkClientTerminalTypeHandler >> server [
-	^ server
-]
-
-{ #category : #accessing }
-MudTalkClientTerminalTypeHandler >> server: aConnection [
-	server := aConnection
+MudTalkClientTerminalTypeHandler >> subnego: option data: aByteString from: server [
+	server subnegoStream: [ :stream |
+		stream nextPut: TelnetOption terminalType;
+			nextPut: TelnetTerminalType is;
+			nextPutAll: self clientTerminalType ]
 ]
 
 { #category : #telnet }
-MudTalkClientTerminalTypeHandler >> subnego: option data: aByteString [
-	(option = TelnetOption terminalType) ifTrue: [
-		self server subnegoStream: [ :stream |
-			stream nextPut: TelnetOption terminalType;
-				nextPut: TelnetTerminalType is;
-				nextPutAll: self clientTerminalType ] ]
-]
-
-{ #category : #telnet }
-MudTalkClientTerminalTypeHandler >> will: option [
-	option = TelnetOption terminalType
-		ifTrue: [ 
-			self server do: TelnetOption terminalType.
-			self server subnego: self bytesForSend option: TelnetOption terminalType ]
+MudTalkClientTerminalTypeHandler >> will: option from: server [
+	super will: option from: server.
+	server subnego: self bytesForSend option: TelnetOption terminalType
 ]

@@ -6,7 +6,7 @@ Class {
 
 { #category : #fonts }
 MudTalkClientTheme >> fixedWidthFontFamily [
-	^ (LogicalFontManager current fixedWidthFamilies at: 1) familyName
+	^ LogicalFontManager current fixedWidthFamilies first familyName
 ]
 
 { #category : #fonts }
@@ -21,5 +21,7 @@ MudTalkClientTheme >> textEditorNormalFillStyleFor: aTextEditor [
 
 { #category : #fonts }
 MudTalkClientTheme >> textFont [
-	^ LogicalFont familyName: (self fixedWidthFontFamily) pointSize: self fontSize
+	^ LogicalFont
+		familyName: (self fixedWidthFontFamily)
+		pointSize: self fontSize
 ]

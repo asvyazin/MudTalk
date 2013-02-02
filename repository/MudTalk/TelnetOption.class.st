@@ -5,13 +5,18 @@ Class {
 }
 
 { #category : #constants }
-TelnetOption class >> compess2 [
+TelnetOption class >> compress [
+	^ 85.
+]
+
+{ #category : #constants }
+TelnetOption class >> compress2 [
 	^ 86.
 ]
 
 { #category : #constants }
-TelnetOption class >> compress [
-	^ 85.
+TelnetOption class >> echo [
+	^ 1
 ]
 
 { #category : #constants }
@@ -27,6 +32,11 @@ TelnetOption class >> gmcp [
 { #category : #constants }
 TelnetOption class >> msp [
 	^ 90.
+]
+
+{ #category : #constants }
+TelnetOption class >> mssp [
+	^ 70
 ]
 
 { #category : #constants }

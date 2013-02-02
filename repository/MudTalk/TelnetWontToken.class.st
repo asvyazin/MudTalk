@@ -6,5 +6,5 @@ Class {
 
 { #category : #events }
 TelnetWontToken >> triggerOn: aEventManager [
-	aEventManager triggerEvent: #wont: with: (self value at: 1) asInteger.
+	aEventManager triggerEvent: #wont: with: (self value first) asInteger.
 ]

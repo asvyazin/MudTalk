@@ -3,18 +3,14 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'window',
-		'inputPane',
-		'outputPane',
-		'doHandlers',
-		'willHandlers',
-		'font',
-		'telnetOptionHandlers',
 		'server',
 		'commandHandlers',
 		'escapeParser',
-		'escapeHandlers',
 		'escapeTextAttributes',
-		'textAttributes'
+		'textAttributes',
+		'keyBindings',
+		'msspParams',
+		'telnetSettings'
 	],
 	#category : #'MudTalk-Client'
 }
@@ -22,6 +18,30 @@ Class {
 { #category : #'instance creation' }
 MudTalkClient class >> openWindowOnHost: aByteString port: aSmallInteger [ 
 	self new openWindowOnHost: aByteString port: aSmallInteger.
+]
+
+{ #category : #keybinding }
+MudTalkClient >> actionForEvent: evt ifPresent: anAction [ 
+	self keyBindings do: [ :keyBinding |
+		(keyBinding matchEvent: evt) ifTrue: [ anAction value: (keyBinding action) ] ]
+]
+
+{ #category : #keybinding }
+MudTalkClient >> bindKey: aKey to: anAction [ 
+	self keyBindings add: (MudTalkClientKeyBinding new key: aKey action: anAction)
+]
+
+{ #category : #initialization }
+MudTalkClient >> bindStandardKeys [
+	self
+		bindKey: #num2 asKey to: [ self serverText: 'south' ];
+		bindKey: #num8 asKey to: [ self serverText: 'north' ];
+		bindKey: #num4 asKey to: [ self serverText: 'west' ];
+		bindKey: #num6 asKey to: [ self serverText: 'east' ];
+		bindKey: #num7 asKey to: [ self serverText: 'northwest' ];
+		bindKey: #num9 asKey to: [ self serverText: 'northeast' ];
+		bindKey: #num1 asKey to: [ self serverText: 'southwest' ];
+		bindKey: #num3 asKey to: [ self serverText: 'southeast' ]
 ]
 
 { #category : #telnet }
@@ -38,8 +58,18 @@ MudTalkClient >> commandHandlers [
 ]
 
 { #category : #connection }
-MudTalkClient >> connectTo: aHost port: aPort [ 
-	server := MudTalkConnectionToServer new connectTo: aHost port: aPort.
+MudTalkClient >> connectTo: aHost port: aPort [
+	server := MudTalkConnectionToServer new.
+	server events
+		when: #disconnected send: #disconnected to: self;
+		when: #do: send: #do: to: self;
+		when: #dont: send: #dont: to: self;
+		when: #will: send: #will: to: self;
+		when: #wont: send: #wont: to: self;
+		when: #subnego:data: send: #subnego:data: to: self;
+		when: #command: send: #command: to: self;
+		when: #text: send: #text: to: self.
+	server connectTo: aHost port: aPort
 ]
 
 { #category : #connection }
@@ -59,14 +89,25 @@ MudTalkClient >> disconnect [
 
 { #category : #connection }
 MudTalkClient >> disconnected [
-	self outputText: self connectionClosedText
+	self window outputText: self connectionClosedText
 ]
 
 { #category : #telnet }
-MudTalkClient >> do: cmd [
-	telnetOptionHandlers at: cmd
-		ifPresent: [ :handler | handler do: cmd ]
-		ifAbsent: [ self unknownDoOption: cmd ]
+MudTalkClient >> do: anOption [
+	telnetSettings ifOption: anOption
+		unknown: [self unknownDo: anOption]
+		disabled: [server wont: anOption]
+		ignored: [^self]
+		enabled: [:handler | handler do: anOption from: server]
+]
+
+{ #category : #telnet }
+MudTalkClient >> dont: anOption [
+	telnetSettings ifOption: anOption
+		unknown: [self unknownDont: anOption]
+		disabled: [server wont: anOption]
+		ignored: [^self]
+		enabled: [:handler | handler dont: anOption from: server]
 ]
 
 { #category : #'escape parsing' }
@@ -83,18 +124,23 @@ MudTalkClient >> escapeParser [
 	^ escapeParser ifNil: [ escapeParser := MudTalkEscapeParser new ]
 ]
 
-{ #category : #accessing }
+{ #category : #input }
 MudTalkClient >> getInput [
 	^nil.
+]
+
+{ #category : #output }
+MudTalkClient >> getOutput [
+	^ nil
 ]
 
 { #category : #initialization }
 MudTalkClient >> initialize [
 	super initialize.
+	self initializeTelnetSettings.
 	self initializeEscapeTextAttributes.
 	self initializeTextAttributes.
-	self installInputPane.
-	self installOutputPane.
+	self initializeKeybindings
 ]
 
 { #category : #initialization }
@@ -114,13 +160,24 @@ MudTalkClient >> initializeEscapeTextAttributes [
 ]
 
 { #category : #initialization }
-MudTalkClient >> initializeTelnetOptionHandlers [
-	telnetOptionHandlers := Dictionary new.
-	telnetOptionHandlers
-		at: TelnetOption suppressGoAhead
-		put: (MudTalkClientSuppressGoAheadHandler new server: self server client: self);
-		at: TelnetOption terminalType
-		put: (MudTalkClientTerminalTypeHandler new server: self server)
+MudTalkClient >> initializeKeybindings [
+	self window on: #keyStroke send: #keyStroke: to: self.
+	self bindStandardKeys
+]
+
+{ #category : #initialization }
+MudTalkClient >> initializeTelnetSettings [
+	| terminalTypeHandler suppressGoAheadHandler |
+	telnetSettings := MudTalkClientTelnetSettings new.
+	telnetSettings
+		disableOption: TelnetOption naws;
+		disableOption: TelnetOption compress;
+		disableOption: TelnetOption compress2;
+		disableOption: TelnetOption echo;
+		enableOption: TelnetOption terminalType
+			withHandler: MudTalkClientTerminalTypeHandler new;
+		enableOption: TelnetOption suppressGoAhead
+			withHandler: (MudTalkClientSuppressGoAheadHandler new client: self)
 ]
 
 { #category : #initialization }
@@ -133,79 +190,30 @@ MudTalkClient >> inputAttributes [
 	^ { TextColor color: Color lightBrown }
 ]
 
-{ #category : #accessing }
-MudTalkClient >> inputPane [
-	^ inputPane ifNil: [
-		inputPane := self window newTextEditorFor: self getText: #getInput setText: #sendCommand:.
-		inputPane textColor: Color white;
-			acceptOnCR: true;
-			alwaysAccept: true]
+{ #category : #keybinding }
+MudTalkClient >> keyBindings [
+	^ keyBindings ifNil: [ keyBindings := OrderedCollection new ]
 ]
 
-{ #category : #initialization }
-MudTalkClient >> installInputPane [
-	self window
-		addMorph: self inputPane
-		fullFrame: (LayoutFrame fractions: (0@0.75 extent: 1@1)).
+{ #category : #keybinding }
+MudTalkClient >> keyStroke: evt [
+	self actionForEvent: evt ifPresent: [ :handler | handler value. ^true ].
+	^ false
 ]
 
-{ #category : #initialization }
-MudTalkClient >> installOutputPane [
-	self window
-		addMorph: self outputPane
-		fullFrame: (LayoutFrame fractions: (0@0 extent: 1@0.75)).
-]
-
-{ #category : #initialization }
-MudTalkClient >> openConnectionOn: aHost port: aPort [
-	self connectTo: aHost port: aPort.
-	server events
-		when: #disconnected send: #disconnected to: self;
-		when: #do: send: #do: to: self;
-		when: #dont: send: #dont: to: self;
-		when: #will: send: #will: to: self;
-		when: #wont: send: #wont: to: self;
-		when: #subnego:data: send: #subnego:data: to: self;
-		when: #command: send: #command: to: self;
-		when: #text: send: #text: to: self
+{ #category : #mssp }
+MudTalkClient >> msspParamsReceived: msspParamsCollection [
+	msspParams := msspParamsCollection.
+	msspParams do: [ :param |
+		self trace: param name;
+			trace: ' = ';
+			traceCr: param values ]
 ]
 
 { #category : #initialization }
 MudTalkClient >> openWindowOnHost: aHost port: aPort [
-	self openConnectionOn: (NetNameResolver addressForName: aHost) port: aPort.
-	self initializeTelnetOptionHandlers.
-	self window openInWorld.
-	self inputPane takeKeyboardFocus.
-]
-
-{ #category : #accessing }
-MudTalkClient >> outputPane [
-	^ outputPane ifNil: [
-		outputPane := self window newTextEditorFor: self getText: nil setText: nil.
-		outputPane textColor: Color white]
-]
-
-{ #category : #outputting }
-MudTalkClient >> outputText: aText [
-	self outputPane appendText: aText
-]
-
-{ #category : #outputting }
-MudTalkClient >> outputText: aText withAttributes: attributes [
-	| textCopy |
-	textCopy := aText copy.
-	attributes do: [ :attr | textCopy addAttribute: attr ].
-	self outputText: textCopy
-]
-
-{ #category : #connection }
-MudTalkClient >> sendCommand: aText [
-	| textForOutput |
-	textForOutput := aText copy.
-	textForOutput append: String cr.
-	self outputText: textForOutput withAttributes: self inputAttributes.
-	server text: aText.
-	self changed: #getInput.
+	self connectTo: (NetNameResolver addressForName: aHost) port: aPort.
+	self window openInWorld
 ]
 
 { #category : #accessing }
@@ -213,17 +221,38 @@ MudTalkClient >> server [
 	^ server
 ]
 
-{ #category : #telnet }
-MudTalkClient >> subnego: anOption data: aByteString [
-	telnetOptionHandlers at: anOption
-		ifPresent: [ :handler | handler subnego: anOption data: aByteString ]
-		ifAbsent: [ self unknownSubnego: anOption data: aByteString ]
+{ #category : #connection }
+MudTalkClient >> serverText: aText [
+	| textForOutput |
+	textForOutput := aText copy asText.
+	textForOutput append: String cr.
+	window outputText: textForOutput withAttributes: self inputAttributes.
+	server text: aText
+]
+
+{ #category : #input }
+MudTalkClient >> setInput: aText [
+	self serverText: aText.
+	self changed: #getInput
+]
+
+{ #category : #output }
+MudTalkClient >> setOutput: aModel [
 ]
 
 { #category : #telnet }
-MudTalkClient >> text: line [
+MudTalkClient >> subnego: anOption data: aByteString [
+	telnetSettings ifOption: anOption
+		unknown: [self unknownSubnego: anOption]
+		disabled: [^self]
+		ignored: [^self]
+		enabled: [:handler | handler subnego: anOption data: aByteString from: server]
+]
+
+{ #category : #telnet }
+MudTalkClient >> text: aText [
 	| tokens |
-	tokens := self escapeParser parse: line.
+	tokens := self escapeParser parse: aText.
 	tokens do: [ :token | token triggerOn: self ].
 ]
 
@@ -239,59 +268,65 @@ MudTalkClient >> textAttributes: newAttributeCodes [
 
 { #category : #'escape parsing' }
 MudTalkClient >> unescapedText: aString [
-	self outputText: aString asText withAttributes: textAttributes
+	self window outputText: aString asText withAttributes: textAttributes
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownCommand: aTelnetCommand [
-	^ self
+	self
 		trace: 'unknown telnet command: ';
 		traceCr: aTelnetCommand
 ]
 
 { #category : #telnet }
-MudTalkClient >> unknownDoOption: cmd [
-	self trace: 'unknown DO option: ';
-		traceCr: cmd.
+MudTalkClient >> unknownDo: anOption [
+	self trace: 'unknown DO: ';
+		traceCr: anOption
 ]
 
 { #category : #telnet }
-MudTalkClient >> unknownSubnego: option data: aByteString [ 
-	self trace: 'unknown SUBNEGO option: ';
-		trace: option;
-		trace: ', data size: ';
-		traceCr: aByteString size.
+MudTalkClient >> unknownDont: anOption [
+	self trace: 'unknown DONT: ';
+		traceCr: anOption
 ]
 
 { #category : #telnet }
-MudTalkClient >> unknownWillOption: cmd [
-	self trace: 'unknown WILL option: ';
-		traceCr: cmd.
+MudTalkClient >> unknownSubnego: anOption [
+	self trace: 'unknown SUBNEGO: ';
+		traceCr: anOption
 ]
 
 { #category : #telnet }
-MudTalkClient >> unknownWontOption: anOption [ 
-	self trace: 'unknown WONT option: ';
-		traceCr: anOption.
+MudTalkClient >> unknownWill: anOption [
+	self trace: 'unknown WILL: ';
+		traceCr: anOption
 ]
 
 { #category : #telnet }
-MudTalkClient >> will: cmd [
-	telnetOptionHandlers at: cmd
-		ifPresent: [ :handler | handler will: cmd ]
-		ifAbsent: [ self unknownWillOption: cmd ]
+MudTalkClient >> unknownWont: anOption [
+	self trace: 'unknown WONT: ';
+		traceCr: anOption
+]
+
+{ #category : #telnet }
+MudTalkClient >> will: anOption [
+	telnetSettings ifOption: anOption
+		unknown: [self unknownWill: anOption]
+		disabled: [server dont: anOption]
+		ignored: [^self]
+		enabled: [:handler | handler will: anOption from: server]
 ]
 
 { #category : #accessing }
 MudTalkClient >> window [
-	^ window ifNil: [
-		window := StandardWindow labelled: 'MUD client'.
-		window theme: MudTalkClientTheme new]
+	^ window ifNil: [ window := MudTalkClientWindow new on: self ]
 ]
 
 { #category : #telnet }
-MudTalkClient >> wont: anOption [ 
-	telnetOptionHandlers at: anOption
-		ifPresent: [ :handler | handler value: anOption ]
-		ifAbsent: [ self unknownWontOption: anOption ]
+MudTalkClient >> wont: anOption [
+	telnetSettings ifOption: anOption
+		unknown: [self unknownWont: anOption]
+		disabled: [server dont: anOption]
+		ignored: [^self]
+		enabled: [:handler | handler wont: anOption from: server]
 ]

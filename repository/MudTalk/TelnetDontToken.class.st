@@ -6,5 +6,5 @@ Class {
 
 { #category : #events }
 TelnetDontToken >> triggerOn: aEventManager [
-	aEventManager triggerEvent: #dont: with: (self value at: 1) asInteger.
+	aEventManager triggerEvent: #dont: with: (self value first) asInteger.
 ]

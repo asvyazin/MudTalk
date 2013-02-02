@@ -11,7 +11,7 @@ TelnetParser class >> anyToken: aTokenClass [
 
 { #category : #parsers }
 TelnetParser class >> ao [
-	^ (TelnetParser iac , TelnetParser aoChar asParser) token: TelnetAoToken
+	^ (self class iac, self class aoChar asParser) token: TelnetAoToken
 ]
 
 { #category : #constants }
@@ -21,7 +21,7 @@ TelnetParser class >> aoChar [
 
 { #category : #parsers }
 TelnetParser class >> ayt [
- 	^ (TelnetParser iac , TelnetParser aytChar asParser) token: TelnetAytToken
+ 	^ (self class iac, self class aytChar asParser) token: TelnetAytToken
 ]
 
 { #category : #constants }
@@ -31,7 +31,7 @@ TelnetParser class >> aytChar [
 
 { #category : #parsers }
 TelnetParser class >> brk [
-	^ (TelnetParser iac , TelnetParser brkChar asParser) token: TelnetBrkToken
+	^ (self class iac, self class brkChar asParser) token: TelnetBrkToken
 ]
 
 { #category : #constants }
@@ -41,7 +41,7 @@ TelnetParser class >> brkChar [
 
 { #category : #parsers }
 TelnetParser class >> dm [
-	^ (TelnetParser iac , TelnetParser dmChar asParser) token: TelnetDmToken
+	^ (self class iac, self class dmChar asParser) token: TelnetDmToken
 ]
 
 { #category : #constants }
@@ -51,9 +51,9 @@ TelnetParser class >> dmChar [
 
 { #category : #parsers }
 TelnetParser class >> do [
-	^ (TelnetParser iac,
-		TelnetParser doChar asParser,
-		(TelnetParser anyToken: TelnetDoToken)) ==>
+	^ (self class iac,
+		self class doChar asParser,
+		(self class anyToken: TelnetDoToken)) ==>
 			[:parts | parts at: 3].
 ]
 
@@ -64,9 +64,9 @@ TelnetParser class >> doChar [
 
 { #category : #parsers }
 TelnetParser class >> dont [
-	^ (TelnetParser iac,
-		TelnetParser dontChar asParser,
-		(TelnetParser anyToken: TelnetDontToken)) ==>
+	^ (self class iac,
+		self class dontChar asParser,
+		(self class anyToken: TelnetDontToken)) ==>
 			[:parts | parts at: 3].
 ]
 
@@ -77,7 +77,7 @@ TelnetParser class >> dontChar [
 
 { #category : #parsers }
 TelnetParser class >> ec [
-	^ (TelnetParser iac , TelnetParser ecChar asParser) token: TelnetEcToken
+	^ (self class iac, self class ecChar asParser) token: TelnetEcToken
 ]
 
 { #category : #constants }
@@ -87,7 +87,7 @@ TelnetParser class >> ecChar [
 
 { #category : #parsers }
 TelnetParser class >> el [
-	^ (TelnetParser iac , TelnetParser elChar asParser) token: TelnetElToken
+	^ (self class iac, self class elChar asParser) token: TelnetElToken
 ]
 
 { #category : #constants }
@@ -97,7 +97,7 @@ TelnetParser class >> elChar [
 
 { #category : #parsers }
 TelnetParser class >> eor [
-	^ (TelnetParser iac, TelnetParser eorChar asParser) token: TelnetEorToken.
+	^ (self class iac, self class eorChar asParser) token: TelnetEorToken.
 ]
 
 { #category : #constants }
@@ -107,12 +107,12 @@ TelnetParser class >> eorChar [
 
 { #category : #constants }
 TelnetParser class >> eorDelimiter [
-	^ String with: TelnetParser iacChar with: TelnetParser eorChar.
+	^ String with: self class iacChar with: self class eorChar.
 ]
 
 { #category : #parsers }
 TelnetParser class >> ga [
-	^ (TelnetParser iac , TelnetParser gaChar asParser) token: TelnetGaToken
+	^ (self class iac, self class gaChar asParser) token: TelnetGaToken
 ]
 
 { #category : #constants }
@@ -122,7 +122,7 @@ TelnetParser class >> gaChar [
 
 { #category : #parsers }
 TelnetParser class >> iac [
-	^ TelnetParser iacChar asParser.
+	^ self class iacChar asParser.
 ]
 
 { #category : #constants }
@@ -132,13 +132,13 @@ TelnetParser class >> iacChar [
 
 { #category : #parsers }
 TelnetParser class >> iaciac [
-	^ (TelnetParser iac, TelnetParser iac)
-		answer: TelnetParser iacChar.
+	^ (self class iac, self class iac)
+		answer: self class iacChar.
 ]
 
 { #category : #parsers }
 TelnetParser class >> ip [
-	^ (TelnetParser iac , TelnetParser ipChar asParser) token: TelnetIpToken
+	^ (self class iac, self class ipChar asParser) token: TelnetIpToken
 ]
 
 { #category : #parsers }
@@ -148,7 +148,7 @@ TelnetParser class >> ipChar [
 
 { #category : #parsers }
 TelnetParser class >> nop [
-	^ (TelnetParser iac , TelnetParser nopChar asParser) token: TelnetNopToken
+	^ (self class iac, self class nopChar asParser) token: TelnetNopToken
 ]
 
 { #category : #constants }
@@ -158,17 +158,17 @@ TelnetParser class >> nopChar [
 
 { #category : #parsers }
 TelnetParser class >> normalChar [
-	^ TelnetParser iaciac / TelnetParser iac negate.
+	^ self class iaciac / self class iac negate.
 ]
 
 { #category : #parsers }
 TelnetParser class >> parser [
-	^ (TelnetParser special / TelnetParser text) star end.
+	^ (self class special / self class text) star end.
 ]
 
 { #category : #parsers }
 TelnetParser class >> sb [
-	^ (TelnetParser iac, TelnetParser sbChar asParser) answer: #sb
+	^ (self class iac, self class sbChar asParser) answer: #sb
 ]
 
 { #category : #constants }
@@ -178,7 +178,7 @@ TelnetParser class >> sbChar [
 
 { #category : #parsers }
 TelnetParser class >> se [
-	^ (TelnetParser iac, TelnetParser seChar asParser) answer: #se
+	^ (self class iac, self class seChar asParser) answer: #se
 ]
 
 { #category : #constants }
@@ -188,38 +188,38 @@ TelnetParser class >> seChar [
 
 { #category : #parsers }
 TelnetParser class >> special [
-	^ TelnetParser nop /
-		TelnetParser dm /
-		TelnetParser brk /
-		TelnetParser ip /
-		TelnetParser ao /
-		TelnetParser ayt /
-		TelnetParser ec /
-		TelnetParser el /
-		TelnetParser ga /
-		TelnetParser do /
-		TelnetParser dont /
-		TelnetParser will /
-		TelnetParser wont /
-		TelnetParser subnego.
+	^ self class nop /
+		self class dm /
+		self class brk /
+		self class ip /
+		self class ao /
+		self class ayt /
+		self class ec /
+		self class el /
+		self class ga /
+		self class do /
+		self class dont /
+		self class will /
+		self class wont /
+		self class subnego
 ]
 
 { #category : #parsers }
 TelnetParser class >> subnego [
-	^ TelnetParser sb, (TelnetParser normalChar plus token: TelnetSubnegoToken), TelnetParser se ==>
+	^ self class sb, (self class normalChar plus token: TelnetSubnegoToken), self class se ==>
 		[ :parts | parts at: 2 ]
 ]
 
 { #category : #parsers }
 TelnetParser class >> text [
-	^ TelnetParser normalChar plus ==> [:chars | TelnetTextToken on: (String withAll: chars)].
+	^ self class normalChar plus ==> [:chars | TelnetTextToken on: (String withAll: chars)].
 ]
 
 { #category : #parsers }
 TelnetParser class >> will [
-	^ (TelnetParser iac,
-		TelnetParser willChar asParser,
-		(TelnetParser anyToken: TelnetWillToken)) ==>
+	^ (self class iac,
+		self class willChar asParser,
+		(self class anyToken: TelnetWillToken)) ==>
 			[:parts | parts at: 3].
 ]
 
@@ -230,9 +230,9 @@ TelnetParser class >> willChar [
 
 { #category : #parsers }
 TelnetParser class >> wont [
-	^ (TelnetParser iac,
-		TelnetParser wontChar asParser,
-		(TelnetParser anyToken: TelnetWontToken)) ==>
+	^ (self class iac,
+		self class wontChar asParser,
+		(self class anyToken: TelnetWontToken)) ==>
 			[:parts | parts at: 3].
 ]
 
