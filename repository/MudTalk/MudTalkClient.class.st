@@ -6,8 +6,6 @@ Class {
 		'server',
 		'commandHandlers',
 		'escapeParser',
-		'escapeTextAttributes',
-		'textAttributes',
 		'keyBindings',
 		'msspParams',
 		'telnetSettings'
@@ -77,11 +75,6 @@ MudTalkClient >> connectionClosedText [
 	^ '******* CONNECTION CLOSED *******' asText addAttribute: (TextColor color: Color red)
 ]
 
-{ #category : #initialization }
-MudTalkClient >> defaultTextAttribute [
-	^ TextColor color: Color white
-]
-
 { #category : #connection }
 MudTalkClient >> disconnect [
 	server ifNotNil: [ server terminate ].
@@ -110,18 +103,9 @@ MudTalkClient >> dont: anOption [
 		enabled: [:handler | handler dont: anOption from: server]
 ]
 
-{ #category : #'escape parsing' }
-MudTalkClient >> escape: aByteString [
-	| attributes |
-	attributes := self escapeParser textAttributeParser parse: aByteString.
-	attributes isPetitFailure
-		ifTrue: [ self trace: 'unknown escape: '; traceCr: aByteString ]
-		ifFalse: [ self textAttributes: attributes ]
-]
-
-{ #category : #'escape parsing' }
+{ #category : #private }
 MudTalkClient >> escapeParser [
-	^ escapeParser ifNil: [ escapeParser := MudTalkEscapeParser new ]
+	^ escapeParser ifNil: [ escapeParser := MudTalkClientEscapeParser new ]
 ]
 
 { #category : #input }
@@ -138,25 +122,7 @@ MudTalkClient >> getOutput [
 MudTalkClient >> initialize [
 	super initialize.
 	self initializeTelnetSettings.
-	self initializeEscapeTextAttributes.
-	self initializeTextAttributes.
 	self initializeKeybindings
-]
-
-{ #category : #initialization }
-MudTalkClient >> initializeEscapeTextAttributes [
-	escapeTextAttributes := Dictionary new.
-	escapeTextAttributes
-		at: 0 put: self defaultTextAttribute;
-		at: 1 put: TextEmphasis bold;
-		at: 30 put: (TextColor color: Color black);
-		at: 31 put: (TextColor color: Color red);
-		at: 32 put: (TextColor color: Color green);
-		at: 33 put: (TextColor color: Color yellow);
-		at: 34 put: (TextColor color: Color blue);
-		at: 35 put: (TextColor color: Color magenta);
-		at: 36 put: (TextColor color: Color cyan);
-		at: 37 put: (TextColor color: Color white)
 ]
 
 { #category : #initialization }
@@ -178,11 +144,6 @@ MudTalkClient >> initializeTelnetSettings [
 			withHandler: MudTalkClientTerminalTypeHandler new;
 		enableOption: TelnetOption suppressGoAhead
 			withHandler: (MudTalkClientSuppressGoAheadHandler new client: self)
-]
-
-{ #category : #initialization }
-MudTalkClient >> initializeTextAttributes [
-	textAttributes := { self defaultTextAttribute }
 ]
 
 { #category : #private }
@@ -251,24 +212,7 @@ MudTalkClient >> subnego: anOption data: aByteString [
 
 { #category : #telnet }
 MudTalkClient >> text: aText [
-	| tokens |
-	tokens := self escapeParser parse: aText.
-	tokens do: [ :token | token triggerOn: self ].
-]
-
-{ #category : #'escape parsing' }
-MudTalkClient >> textAttributes: newAttributeCodes [
-	| newAttributes |
-	newAttributes := OrderedCollection new.
-	newAttributeCodes do: [ :each | escapeTextAttributes
-		at: each
-		ifPresent: [ :attr | newAttributes add: attr ] ].
-	textAttributes := newAttributes asArray
-]
-
-{ #category : #'escape parsing' }
-MudTalkClient >> unescapedText: aString [
-	self window outputText: aString asText withAttributes: textAttributes
+	self window outputText: (self escapeParser parse: aText)
 ]
 
 { #category : #telnet }

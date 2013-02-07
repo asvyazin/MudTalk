@@ -5,6 +5,6 @@ Class {
 }
 
 { #category : #processing }
-MudTalkEscapeToken >> triggerOn: aTarget [ 
-	aTarget escape: self value
+MudTalkEscapeToken >> processEscapeTokenWith: processor [  
+	processor escape: self
 ]
