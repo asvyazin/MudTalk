@@ -143,7 +143,7 @@ MudTalkClient >> initializeTelnetSettings [
 		enableOption: TelnetOption terminalType
 			withHandler: MudTalkClientTerminalTypeHandler new;
 		enableOption: TelnetOption gmcp
-			withHandler: (MudTalkClientGmcpHandler new announcer: self announcer)
+			withHandler: MudTalkClientGmcpHandler new
 ]
 
 { #category : #private }
