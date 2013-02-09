@@ -17,6 +17,13 @@ MudTalkConnectionToServer >> connectTo: aHost port: aPort [
 	[ self networkReadLoop ] forkNamed: 'MUD client network reading process'
 ]
 
+{ #category : #private }
+MudTalkConnectionToServer >> debugOutputGmcpMessage: message [
+	self trace: 'sending GMCP: '.
+	message writeTo: Transcript.
+	Transcript cr.
+]
+
 { #category : #server }
 MudTalkConnectionToServer >> do: option [
 	stream nextPut: TelnetParser iacChar;
@@ -38,6 +45,12 @@ MudTalkConnectionToServer >> events [
 	^ events ifNil: [ events := EventManager new ]
 ]
 
+{ #category : #server }
+MudTalkConnectionToServer >> gmcp: message [
+	self debugOutputGmcpMessage: message.
+	self subnego: TelnetOption gmcp block: [ :strm | message writeTo: strm ]
+]
+
 { #category : #private }
 MudTalkConnectionToServer >> networkReadLoop [
 	[ [ self processTelnetToken ] repeat ]
@@ -55,6 +68,13 @@ MudTalkConnectionToServer >> processTelnetToken [
 { #category : #server }
 MudTalkConnectionToServer >> subnego: aByteArray [
 	self subnegoStream: [ :strm | strm nextPutAll: aByteArray ].
+]
+
+{ #category : #server }
+MudTalkConnectionToServer >> subnego: anOption block: aBlock [
+	self subnegoStream: [ :strm |
+		strm nextPut: anOption.
+		aBlock value: strm ]
 ]
 
 { #category : #server }

@@ -142,7 +142,9 @@ MudTalkClient >> initializeTelnetSettings [
 		disableOption: TelnetOption echo;
 		disableOption: TelnetOption suppressGoAhead;
 		enableOption: TelnetOption terminalType
-			withHandler: MudTalkClientTerminalTypeHandler new
+			withHandler: MudTalkClientTerminalTypeHandler new;
+		enableOption: TelnetOption gmcp
+			withHandler: MudTalkClientGmcpHandler new
 ]
 
 { #category : #private }
