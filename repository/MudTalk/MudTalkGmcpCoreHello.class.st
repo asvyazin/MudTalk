@@ -8,6 +8,11 @@ Class {
 	#category : #'MudTalk-Client'
 }
 
+{ #category : #accessing }
+MudTalkGmcpCoreHello class >> messageName [
+	^ 'Core.Hello'
+]
+
 { #category : #json }
 MudTalkGmcpCoreHello class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
@@ -18,9 +23,4 @@ MudTalkGmcpCoreHello class >> neoJsonMapping: mapper [
 MudTalkGmcpCoreHello >> client: clientName version: clientVersion [
 	client := clientName.
 	version := clientVersion
-]
-
-{ #category : #accessing }
-MudTalkGmcpCoreHello >> name [
-	^ 'Core.Hello'
 ]

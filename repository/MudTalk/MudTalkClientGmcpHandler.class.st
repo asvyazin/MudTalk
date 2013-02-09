@@ -1,6 +1,9 @@
 Class {
 	#name : #MudTalkClientGmcpHandler,
 	#superclass : #MudTalkClientEnabledOptionHandler,
+	#instVars : [
+		'gmcpDataParser'
+	],
 	#category : #'MudTalk-Client'
 }
 
@@ -19,6 +22,22 @@ MudTalkClientGmcpHandler >> do: anOption from: server [
 	super do: anOption from: server.
 	self sendCoreHelloTo: server.
 	self sendCoreSupportsSetTo: server
+]
+
+{ #category : #parsing }
+MudTalkClientGmcpHandler >> gmcpDataParser [
+	^ gmcpDataParser ifNil: [ gmcpDataParser := self newGmcpDataParser ]
+]
+
+{ #category : #parsing }
+MudTalkClientGmcpHandler >> messageName [
+	^ #space asParser negate star flatten
+]
+
+{ #category : #parsing }
+MudTalkClientGmcpHandler >> newGmcpDataParser [
+	^ self messageName, #space asParser, (#any asParser star flatten) ==> [ :tokens |
+		MudTalkGmcpMessageData name: (tokens at: 1) data: (tokens at: 3) ]
 ]
 
 { #category : #telnet }
@@ -43,9 +62,12 @@ MudTalkClientGmcpHandler >> sendCoreSupportsSetTo: server [
 
 { #category : #telnet }
 MudTalkClientGmcpHandler >> subnego: anOption data: gmcpData from: server [
-	self trace: 'GMCP: ';
+	| parsedGmcp gmcpMessage |
+	gmcpData ifEmpty: [ ^self ].
+	parsedGmcp := self gmcpDataParser parse: gmcpData.
+	gmcpMessage := parsedGmcp asMessage.
+	self trace: 'received GMCP: ';
 		traceCr: gmcpData
-	
 ]
 
 { #category : #telnet }

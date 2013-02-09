@@ -7,6 +7,11 @@ Class {
 	#category : #'MudTalk-Client'
 }
 
+{ #category : #accessing }
+MudTalkGmcpCoreSupportsSet class >> messageName [
+	^ 'Core.Supports.Set'
+]
+
 { #category : #gmcp }
 MudTalkGmcpCoreSupportsSet >> bodyOn: jsonWriter [
 	jsonWriter nextPut: supportedPackages
@@ -16,11 +21,6 @@ MudTalkGmcpCoreSupportsSet >> bodyOn: jsonWriter [
 MudTalkGmcpCoreSupportsSet >> initialize [
 	super initialize.
 	supportedPackages := OrderedCollection new
-]
-
-{ #category : #accessing }
-MudTalkGmcpCoreSupportsSet >> name [
-	^ 'Core.Supports.Set'
 ]
 
 { #category : #accessing }

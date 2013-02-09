@@ -4,14 +4,20 @@ Class {
 	#category : #'MudTalk-Client'
 }
 
-{ #category : #accessing }
-MudTalkGmcpMessage >> bodyOn: jsonWriter [
-	jsonWriter nextPut: self
+{ #category : #initialization }
+MudTalkGmcpMessage class >> data: aMessageData [ 
+	^ (NeoJSONReader on: aMessageData messageData readStream) nextAs: self
 ]
 
 { #category : #accessing }
-MudTalkGmcpMessage >> name [
-	self subclassResponsibility
+MudTalkGmcpMessage class >> initialize [
+	(self respondsTo: #messageName) ifTrue: [
+		MudTalkGmcpMessageData registerMessage: self messageName class: self ]
+]
+
+{ #category : #accessing }
+MudTalkGmcpMessage >> bodyOn: jsonWriter [
+	jsonWriter nextPut: self
 ]
 
 { #category : #gmcp }
@@ -21,6 +27,6 @@ MudTalkGmcpMessage >> sendTo: server [
 
 { #category : #gmcp }
 MudTalkGmcpMessage >> writeTo: stream [
-	stream nextPutAll: self name, ' '.
+	stream nextPutAll: self class messageName, ' '.
 	self bodyOn: (NeoJSONWriter on: stream)
 ]
