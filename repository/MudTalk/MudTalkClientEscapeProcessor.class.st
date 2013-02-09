@@ -26,7 +26,7 @@ MudTalkClientEscapeProcessor >> character: aCharacter [
 	self appendCharacter: aCharacter withAttributes: self currentAttributes
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> csi [
 	^ (Character value: 16r1B) asParser, (Character value: 16r5B) asParser
 ]
@@ -51,7 +51,7 @@ MudTalkClientEscapeProcessor >> defaultAttributes [
 	^ {self defaultTextAttribute}
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> defaultTextAttribute [
 	^ TextColor color: Color white
 ]
@@ -65,7 +65,7 @@ MudTalkClientEscapeProcessor >> escape: anEscape [
 		ifFalse: [ self currentAttributes: attributes ]
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> escapeTextAttributes [
 	^ escapeTextAttributes ifNil: [ escapeTextAttributes := self newEscapeTextAttributes ]
 ]
@@ -75,7 +75,7 @@ MudTalkClientEscapeProcessor >> initialize [
 	currentText := '' asText
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> newEscapeTextAttributes [
 	^ Dictionary new
 		at: 0 put: self defaultTextAttribute;
@@ -91,37 +91,37 @@ MudTalkClientEscapeProcessor >> newEscapeTextAttributes [
 		yourself
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> newTextAttributeParser [
 	^ self csi, self textAttributes, self textAttributeFinisher end ==> #third
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttribute [
 	^ #digit asParser plus flatten ==> [ :str | str asInteger ]
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttributeDelimiter [
 	^ $; asParser
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttributeFinisher [
 	^ $m asParser
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttributeFromCode: code [
 	^ self escapeTextAttributes at: code
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttributeParser [
 	^ textAttributeParser ifNil: [ textAttributeParser := self newTextAttributeParser ]
 ]
 
-{ #category : #parsing }
+{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttributes [
 	^ (self textAttribute separatedBy: self textAttributeDelimiter) withoutSeparators
 ]
