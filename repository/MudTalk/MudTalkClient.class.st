@@ -133,7 +133,6 @@ MudTalkClient >> initializeKeybindings [
 
 { #category : #initialization }
 MudTalkClient >> initializeTelnetSettings [
-	| terminalTypeHandler suppressGoAheadHandler |
 	telnetSettings := MudTalkClientTelnetSettings new.
 	telnetSettings
 		disableOption: TelnetOption naws;
@@ -144,7 +143,7 @@ MudTalkClient >> initializeTelnetSettings [
 		enableOption: TelnetOption terminalType
 			withHandler: MudTalkClientTerminalTypeHandler new;
 		enableOption: TelnetOption gmcp
-			withHandler: MudTalkClientGmcpHandler new
+			withHandler: (MudTalkClientGmcpHandler new announcer: self announcer)
 ]
 
 { #category : #private }
