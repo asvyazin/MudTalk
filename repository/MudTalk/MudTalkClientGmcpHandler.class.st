@@ -75,8 +75,7 @@ MudTalkClientGmcpHandler >> subnego: anOption data: gmcpData from: server [
 	gmcpData ifEmpty: [ ^self ].
 	parsedGmcp := self gmcpDataParser parse: gmcpData.
 	gmcpMessage := gmcpSettings messageFromData: parsedGmcp.
-	self trace: 'received GMCP: ';
-		traceCr: gmcpData
+	announcer announce: gmcpMessage
 ]
 
 { #category : #telnet }

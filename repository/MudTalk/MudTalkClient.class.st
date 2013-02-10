@@ -9,7 +9,8 @@ Class {
 		'keyBindings',
 		'msspParams',
 		'telnetSettings',
-		'gmcpSettings'
+		'gmcpSettings',
+		'announcer'
 	],
 	#category : #'MudTalk-Client'
 }
@@ -25,12 +26,17 @@ MudTalkClient >> actionForEvent: evt ifPresent: anAction [
 		(keyBinding matchEvent: evt) ifTrue: [ anAction value: (keyBinding action) ] ]
 ]
 
+{ #category : #accessing }
+MudTalkClient >> announcer [
+	^ announcer ifNil: [ announcer := Announcer new ]
+]
+
 { #category : #keybinding }
 MudTalkClient >> bindKey: aKey to: anAction [ 
 	self keyBindings add: (MudTalkClientKeyBinding new key: aKey action: anAction)
 ]
 
-{ #category : #initialization }
+{ #category : #keybinding }
 MudTalkClient >> bindStandardKeys [
 	self
 		bindKey: #num2 asKey to: [ self serverText: 'south' ];
@@ -76,6 +82,11 @@ MudTalkClient >> connectionClosedText [
 	^ '******* CONNECTION CLOSED *******' asText addAttribute: (TextColor color: Color red)
 ]
 
+{ #category : #gmcp }
+MudTalkClient >> debugGmcp: gmcpMessage [
+	gmcpMessage debugTrace
+]
+
 { #category : #connection }
 MudTalkClient >> disconnect [
 	server ifNotNil: [ server terminate ].
@@ -104,7 +115,7 @@ MudTalkClient >> dont: anOption [
 		enabled: [:handler | handler dont: anOption from: server]
 ]
 
-{ #category : #private }
+{ #category : #'escape parsing' }
 MudTalkClient >> escapeParser [
 	^ escapeParser ifNil: [ escapeParser := MudTalkClientEscapeParser new ]
 ]
@@ -124,7 +135,7 @@ MudTalkClient >> gmcpSettings [
 	^ gmcpSettings ifNil: [ gmcpSettings := MudTalkClientGmcpSettings new ]
 ]
 
-{ #category : #input }
+{ #category : #initialization }
 MudTalkClient >> initialize [
 	super initialize.
 	self initializeTelnetSettings.
@@ -145,7 +156,8 @@ MudTalkClient >> initializeGmcpSettings [
 		enablePackage: 'IRE.Composer';
 		registerMessage: MudTalkGmcpRoomInfo;
 		registerMessage: MudTalkGmcpRoomWrongdir;
-		registerMessage: MudTalkGmcpCoreGoodbye
+		registerMessage: MudTalkGmcpCoreGoodbye.
+	self announcer on: MudTalkGmcpMessage send: #debugGmcp: to: self.
 ]
 
 { #category : #initialization }
@@ -154,7 +166,7 @@ MudTalkClient >> initializeKeybindings [
 	self bindStandardKeys
 ]
 
-{ #category : #input }
+{ #category : #initialization }
 MudTalkClient >> initializeTelnetSettings [
 	telnetSettings := MudTalkClientTelnetSettings new.
 	telnetSettings
@@ -166,7 +178,11 @@ MudTalkClient >> initializeTelnetSettings [
 		enableOption: TelnetOption terminalType
 			withHandler: MudTalkClientTerminalTypeHandler new;
 		enableOption: TelnetOption gmcp
-			withHandler: (MudTalkClientGmcpHandler new gmcpSettings: self gmcpSettings)
+			withHandler:
+				(MudTalkClientGmcpHandler new
+					gmcpSettings: self gmcpSettings;
+					announcer: self announcer;
+					yourself)
 ]
 
 { #category : #private }

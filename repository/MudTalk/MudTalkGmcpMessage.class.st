@@ -1,6 +1,6 @@
 Class {
 	#name : #MudTalkGmcpMessage,
-	#superclass : #Object,
+	#superclass : #Announcement,
 	#category : #'MudTalk-Client'
 }
 
@@ -18,6 +18,13 @@ MudTalkGmcpMessage class >> initialize [
 { #category : #accessing }
 MudTalkGmcpMessage >> bodyOn: jsonWriter [
 	jsonWriter nextPut: self
+]
+
+{ #category : #debugging }
+MudTalkGmcpMessage >> debugTrace [
+	self trace: 'received GMCP message: ', self class messageName, ' '.
+	(NeoJSONWriter on: Transcript) nextPut: self.
+	Transcript cr.
 ]
 
 { #category : #gmcp }
