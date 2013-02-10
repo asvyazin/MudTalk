@@ -1,6 +1,10 @@
 Class {
 	#name : #MudTalkClientGmcpSettings,
 	#superclass : #Object,
+	#instVars : [
+		'enabledPackages',
+		'messageClasses'
+	],
 	#category : #'MudTalk-Client'
 }
 
