@@ -27,3 +27,8 @@ MudTalkGmcpCoreSupportsSet >> initialize [
 MudTalkGmcpCoreSupportsSet >> package: packageName version: packageVersion [
 	supportedPackages add: packageName, ' ', packageVersion
 ]
+
+{ #category : #accessing }
+MudTalkGmcpCoreSupportsSet >> packages: packagesCollection [
+	supportedPackages := packagesCollection
+]

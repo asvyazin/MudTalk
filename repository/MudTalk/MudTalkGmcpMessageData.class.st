@@ -5,9 +5,6 @@ Class {
 		'messageName',
 		'messageData'
 	],
-	#classInstVars : [
-		'messageClasses'
-	],
 	#category : #'MudTalk-Client'
 }
 

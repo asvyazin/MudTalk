@@ -5,11 +5,6 @@ Class {
 		'num',
 		'name',
 		'zone',
-		'terrain',
-		'terraininfo',
-		'size',
-		'shape',
-		'plane',
 		'flags',
 		'coord',
 		'exits'
@@ -28,12 +23,7 @@ MudTalkGmcpRoomInfo class >> neoJsonMapping: mapper [
 		mapping mapInstVar: #num;
 			mapInstVar: #name;
 			mapInstVar: #zone;
-			mapInstVar: #terrain;
-			mapInstVar: #terraininfo;
-			mapInstVar: #size;
-			mapInstVar: #shape;
-			mapInstVar: #plane;
+			mapInstVar: #exits;
 			mapInstVar: #flags.
-		(mapping mapInstVar: #coord) valueSchema: MudTalkGmcpCoord.
-		(mapping mapInstVar: #exits) valueSchema: MudTalkGmcpExits ]
+		(mapping mapInstVar: #coord) valueSchema: MudTalkGmcpCoord ]
 ]
