@@ -3,10 +3,16 @@ Class {
 	#superclass : #MudTalkClientEnabledOptionHandler,
 	#instVars : [
 		'gmcpDataParser',
-		'gmcpSettings'
+		'gmcpSettings',
+		'announcer'
 	],
 	#category : #'MudTalk-Client'
 }
+
+{ #category : #accessing }
+MudTalkClientGmcpHandler >> announcer: anAnnouncer [
+	announcer := anAnnouncer
+]
 
 { #category : #accessing }
 MudTalkClientGmcpHandler >> clientName [
