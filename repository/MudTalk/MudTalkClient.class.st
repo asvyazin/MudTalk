@@ -143,7 +143,9 @@ MudTalkClient >> initializeGmcpSettings [
 		enablePackage: 'Redirect';
 		enablePackage: 'Debug';
 		enablePackage: 'IRE.Composer';
-		registerMessage: MudTalkGmcpRoomInfo
+		registerMessage: MudTalkGmcpRoomInfo;
+		registerMessage: MudTalkGmcpRoomWrongdir;
+		registerMessage: MudTalkGmcpCoreGoodbye
 ]
 
 { #category : #initialization }
