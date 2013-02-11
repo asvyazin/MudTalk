@@ -20,11 +20,12 @@ MudTalkGmcpMessage >> bodyOn: jsonWriter [
 	jsonWriter nextPut: self
 ]
 
-{ #category : #debugging }
-MudTalkGmcpMessage >> debugTrace [
-	self trace: 'received GMCP message: ', self class messageName, ' '.
-	(NeoJSONWriter on: Transcript) nextPut: self.
-	Transcript cr.
+{ #category : #printing }
+MudTalkGmcpMessage >> printString [
+	| stream |
+	stream := WriteStream with: ''.
+	self writeTo: stream.
+	^ stream contents asString
 ]
 
 { #category : #gmcp }

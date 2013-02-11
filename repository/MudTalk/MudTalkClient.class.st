@@ -84,7 +84,7 @@ MudTalkClient >> connectionClosedText [
 
 { #category : #gmcp }
 MudTalkClient >> debugGmcp: gmcpMessage [
-	gmcpMessage debugTrace
+	self traceCr: gmcpMessage printString
 ]
 
 { #category : #connection }
