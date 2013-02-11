@@ -4,7 +4,6 @@ Class {
 	#instVars : [
 		'window',
 		'server',
-		'commandHandlers',
 		'escapeParser',
 		'keyBindings',
 		'msspParams',
@@ -51,15 +50,9 @@ MudTalkClient >> bindStandardKeys [
 
 { #category : #telnet }
 MudTalkClient >> command: aTelnetCommand [
-	self commandHandlers
-		at: aTelnetCommand
-		ifPresent: [ :handler | handler value: aTelnetCommand ]
+	self telnetSettings commandHandlerFor: aTelnetCommand
+		ifEnabled: [ :handler | handler value: aTelnetCommand ]
 		ifAbsent: [ self unknownCommand: aTelnetCommand ]
-]
-
-{ #category : #accessing }
-MudTalkClient >> commandHandlers [
-	^ commandHandlers ifNil: [ commandHandlers := Dictionary new ]
 ]
 
 { #category : #connection }
@@ -170,6 +163,8 @@ MudTalkClient >> initializeKeybindings [
 MudTalkClient >> initializeTelnetSettings [
 	telnetSettings := MudTalkClientTelnetSettings new.
 	telnetSettings
+		disableCommand: TelnetCommand eor;
+		disableCommand: TelnetCommand ga;
 		disableOption: TelnetOption naws;
 		disableOption: TelnetOption compress;
 		disableOption: TelnetOption compress2;

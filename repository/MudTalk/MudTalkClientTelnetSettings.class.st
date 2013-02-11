@@ -2,14 +2,32 @@ Class {
 	#name : #MudTalkClientTelnetSettings,
 	#superclass : #Object,
 	#instVars : [
-		'handlers'
+		'handlers',
+		'commands'
 	],
 	#category : #'MudTalk-Client'
 }
 
+{ #category : #'telnet commands' }
+MudTalkClientTelnetSettings >> commandHandlerFor: aCommandCode ifEnabled: enabledAction ifAbsent: absentAction [
+	self commands at: aCommandCode
+		ifPresent: [ :setting | setting isEnabled ifTrue: [ enabledAction value: setting handler ] ]
+		ifAbsent: [ absentAction value ]
+]
+
+{ #category : #'telnet commands' }
+MudTalkClientTelnetSettings >> disableCommand: aCommandCode [
+	commands at: aCommandCode put: MudTalkClientTelnetEnabledCommandSetting new
+]
+
 { #category : #'telnet options' }
 MudTalkClientTelnetSettings >> disableOption: anOption [
 	self setHandler: MudTalkClientDisabledOptionHandler new for: anOption
+]
+
+{ #category : #'telnet commands' }
+MudTalkClientTelnetSettings >> enableCommand: aCommandCode withHandler: aBlock [
+	commands at: aCommandCode put: (MudTalkClientTelnetCommandSetting new handler: aBlock)
 ]
 
 { #category : #'telnet options' }
@@ -42,7 +60,8 @@ MudTalkClientTelnetSettings >> ignoreOption: anOption [
 { #category : #initialization }
 MudTalkClientTelnetSettings >> initialize [
 	super initialize.
-	handlers := Dictionary new
+	handlers := Dictionary new.
+	commands := Dictionary new
 ]
 
 { #category : #'telnet options' }
