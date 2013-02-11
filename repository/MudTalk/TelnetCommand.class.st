@@ -8,6 +8,11 @@ Class {
 }
 
 { #category : #constants }
+TelnetCommand class >> EOR [
+	^ 25
+]
+
+{ #category : #constants }
 TelnetCommand class >> GA [
 	^ 249
 ]

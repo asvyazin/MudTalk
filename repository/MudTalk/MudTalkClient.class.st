@@ -163,8 +163,8 @@ MudTalkClient >> initializeKeybindings [
 MudTalkClient >> initializeTelnetSettings [
 	telnetSettings := MudTalkClientTelnetSettings new.
 	telnetSettings
-		disableCommand: TelnetCommand eor;
-		disableCommand: TelnetCommand ga;
+		disableCommand: TelnetCommand GA;
+		disableCommand: TelnetCommand EOR;
 		disableOption: TelnetOption naws;
 		disableOption: TelnetOption compress;
 		disableOption: TelnetOption compress2;
