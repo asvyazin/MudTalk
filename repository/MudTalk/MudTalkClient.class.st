@@ -9,7 +9,9 @@ Class {
 		'msspParams',
 		'telnetSettings',
 		'gmcpSettings',
-		'announcer'
+		'announcer',
+		'currentInput',
+		'inputHistory'
 	],
 	#category : #'MudTalk-Client'
 }
@@ -48,9 +50,15 @@ MudTalkClient >> bindStandardKeys [
 		bindKey: #num3 asKey to: [ self serverText: 'southeast' ]
 ]
 
+{ #category : #input }
+MudTalkClient >> clearInputPane [
+	currentInput := nil.
+	self changed: #getInput
+]
+
 { #category : #telnet }
 MudTalkClient >> command: aTelnetCommand [
-	self telnetSettings commandHandlerFor: aTelnetCommand
+	telnetSettings commandHandlerFor: aTelnetCommand
 		ifEnabled: [ :handler | handler value: aTelnetCommand ]
 		ifAbsent: [ self unknownCommand: aTelnetCommand ]
 ]
@@ -115,7 +123,7 @@ MudTalkClient >> escapeParser [
 
 { #category : #input }
 MudTalkClient >> getInput [
-	^nil.
+	^ currentInput
 ]
 
 { #category : #output }
@@ -180,9 +188,26 @@ MudTalkClient >> initializeTelnetSettings [
 					yourself)
 ]
 
-{ #category : #private }
+{ #category : #input }
 MudTalkClient >> inputAttributes [
 	^ { TextColor color: Color lightBrown }
+]
+
+{ #category : #accessing }
+MudTalkClient >> inputHistory [
+	^ inputHistory ifNil: [ inputHistory := MudTalkClientInputHistory new ]
+]
+
+{ #category : #'input history' }
+MudTalkClient >> inputHistoryNext [
+	currentInput := self inputHistory nextCommand.
+	self changed: #getInput
+]
+
+{ #category : #'input history' }
+MudTalkClient >> inputHistoryPrevious [
+	currentInput := self inputHistory previousCommand.
+	self changed: #getInput
 ]
 
 { #category : #keybinding }
@@ -228,7 +253,8 @@ MudTalkClient >> serverText: aText [
 { #category : #input }
 MudTalkClient >> setInput: aText [
 	self serverText: aText.
-	self changed: #getInput
+	self inputHistory appendCommand: aText.
+	self clearInputPane
 ]
 
 { #category : #output }

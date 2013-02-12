@@ -10,14 +10,14 @@ Class {
 
 { #category : #'telnet commands' }
 MudTalkClientTelnetSettings >> commandHandlerFor: aCommandCode ifEnabled: enabledAction ifAbsent: absentAction [
-	self commands at: aCommandCode
+	commands at: aCommandCode
 		ifPresent: [ :setting | setting isEnabled ifTrue: [ enabledAction value: setting handler ] ]
 		ifAbsent: [ absentAction value ]
 ]
 
 { #category : #'telnet commands' }
 MudTalkClientTelnetSettings >> disableCommand: aCommandCode [
-	commands at: aCommandCode put: MudTalkClientTelnetEnabledCommandSetting new
+	commands at: aCommandCode put: MudTalkClientTelnetCommandSetting new
 ]
 
 { #category : #'telnet options' }

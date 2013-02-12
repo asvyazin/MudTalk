@@ -8,14 +8,27 @@ Class {
 	#category : #'MudTalk-Client'
 }
 
+{ #category : #keymap }
+MudTalkClientWindow class >> buildKeymap: aBuilder [
+	<keymap>
+	(aBuilder shortcut: #historyPrevious)
+		category: #MudTalkClientInputPane
+		default: Character arrowUp asShortcut
+		do: [ :target | target inputHistoryPrevious ].
+	(aBuilder shortcut: #historyNext)
+		category: #MudTalkClientInputPane
+		default: Character arrowDown asShortcut
+		do: [ :target |  target inputHistoryNext ]
+]
+
 { #category : #private }
 MudTalkClientWindow >> inputPane [
 	^ inputPane ifNil: [
 		inputPane := self newBasicTextEditorFor: self model getText: #getInput setText: #setInput:.
 		inputPane textColor: Color white;
 			acceptOnCR: true;
-			alwaysAccept: true
-			"layoutFrame: (LayoutFrame fractions: (1@1 extent: 1@1) offsets: (-50@0 extent: 50@0)) " ]
+			alwaysAccept: true;
+			attachKeymapCategory: #MudTalkClientInputPane targetting: self model ]
 ]
 
 { #category : #keybindings }
