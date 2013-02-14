@@ -33,20 +33,21 @@ MudTalkClientWindow >> inputPane [
 
 { #category : #keybindings }
 MudTalkClientWindow >> keyStroke: evt [
-	self eventHandler ifNotNil: [ :eventHandler |
-		(eventHandler keyStroke: evt fromMorph: self) ifTrue: [^true] ].
+	self eventHandler ifNotNil: [:eventHandler |
+		(eventHandler keyStroke: evt fromMorph: self) ifTrue: [^true]].
 	^ super keyStroke: evt
 ]
 
 { #category : #initialization }
 MudTalkClientWindow >> on: aModel [
-	self model: aModel.
-	self setLabel: 'MUD client';
-		theme: MudTalkClientTheme new.
 	self
+		model: aModel;
+		setLabel: 'MUD client';
+		theme: MudTalkClientTheme new;
+		
 		addMorph: self outputPane
-		fullFrame: (LayoutFrame fractions: (0@0 extent: 1@0.75)).
-	self
+		fullFrame: (LayoutFrame fractions: (0@0 extent: 1@0.75));
+		
 		addMorph: self inputPane
 		fullFrame: (LayoutFrame fractions: (0@0.75 extent: 1@1))
 ]
@@ -60,8 +61,12 @@ MudTalkClientWindow >> openInWorld [
 { #category : #private }
 MudTalkClientWindow >> outputPane [
 	^ outputPane ifNil: [
-		outputPane := self newBasicTextEditorFor: self model getText: #getOutput setText: #setOutput:.
-		outputPane textColor: Color white ]
+		outputPane := self
+			newBasicTextEditorFor: self model
+			getText: #getOutput
+			setText: #setOutput:;
+			textColor: Color white;
+			yourself]
 ]
 
 { #category : #output }
@@ -73,6 +78,6 @@ MudTalkClientWindow >> outputText: aText [
 MudTalkClientWindow >> outputText: aText withAttributes: attributes [
 	| textCopy |
 	textCopy := aText copy.
-	attributes do: [ :attr | textCopy addAttribute: attr ].
+	attributes do: [:attr | textCopy addAttribute: attr].
 	self outputText: textCopy
 ]

@@ -10,12 +10,6 @@ MudTalkGmcpMessage class >> data: aMessageData [
 ]
 
 { #category : #accessing }
-MudTalkGmcpMessage class >> initialize [
-	(self respondsTo: #messageName) ifTrue: [
-		MudTalkGmcpMessageData registerMessage: self messageName class: self ]
-]
-
-{ #category : #accessing }
 MudTalkGmcpMessage >> bodyOn: jsonWriter [
 	jsonWriter nextPut: self
 ]

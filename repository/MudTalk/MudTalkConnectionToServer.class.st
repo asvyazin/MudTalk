@@ -14,7 +14,8 @@ MudTalkConnectionToServer >> connectTo: aHost port: aPort [
 	stream := SocketStream openConnectionToHost: aHost port: aPort.
 	stream noTimeout.
 	telnetStream := TelnetStream on: stream.
-	[ self networkReadLoop ] forkNamed: 'MUD client network reading process'
+	[self networkReadLoop]
+		forkNamed: 'MUD client network reading process'
 ]
 
 { #category : #private }
@@ -26,7 +27,8 @@ MudTalkConnectionToServer >> debugOutputGmcpMessage: message [
 
 { #category : #server }
 MudTalkConnectionToServer >> do: option [
-	stream nextPut: TelnetParser iacChar;
+	stream
+		nextPut: TelnetParser iacChar;
 		nextPut: TelnetParser doChar;
 		nextPut: (Character value: option);
 		flush.
@@ -34,7 +36,8 @@ MudTalkConnectionToServer >> do: option [
 
 { #category : #server }
 MudTalkConnectionToServer >> dont: option [ 
-	stream nextPut: TelnetParser iacChar;
+	stream
+		nextPut: TelnetParser iacChar;
 		nextPut: TelnetParser dontChar;
 		nextPut: (Character value: option);
 		flush.
@@ -42,20 +45,28 @@ MudTalkConnectionToServer >> dont: option [
 
 { #category : #accessing }
 MudTalkConnectionToServer >> events [
-	^ events ifNil: [ events := EventManager new ]
+	^ events
 ]
 
 { #category : #server }
 MudTalkConnectionToServer >> gmcp: message [
 	self debugOutputGmcpMessage: message.
-	self subnego: TelnetOption gmcp block: [ :strm | message writeTo: strm ]
+	self
+		subnego: TelnetOption gmcp
+		block: [:strm | message writeTo: strm]
+]
+
+{ #category : #initialization }
+MudTalkConnectionToServer >> initialize [
+	super initialize.
+	events := EventManager new
 ]
 
 { #category : #private }
 MudTalkConnectionToServer >> networkReadLoop [
-	[ [ self processTelnetToken ] repeat ]
+	[[self processTelnetToken] repeat]
 		on: NetworkError
-		do: [ self events triggerEvent: #disconnected ]
+		do: [self events triggerEvent: #disconnected]
 ]
 
 { #category : #private }
@@ -67,28 +78,31 @@ MudTalkConnectionToServer >> processTelnetToken [
 
 { #category : #server }
 MudTalkConnectionToServer >> subnego: aByteArray [
-	self subnegoStream: [ :strm | strm nextPutAll: aByteArray ].
+	self subnegoStream: [:strm | strm nextPutAll: aByteArray]
 ]
 
 { #category : #server }
 MudTalkConnectionToServer >> subnego: anOption block: aBlock [
-	self subnegoStream: [ :strm |
+	self subnegoStream: [:strm |
 		strm nextPut: anOption.
-		aBlock value: strm ]
+		aBlock value: strm]
 ]
 
 { #category : #server }
 MudTalkConnectionToServer >> subnego: aByteArray option: anOption [
-	self subnegoStream: [ :strm | strm nextPut: anOption; nextPutAll: aByteArray ]
+	self subnegoStream: [:strm | strm nextPut: anOption; nextPutAll: aByteArray]
 ]
 
 { #category : #server }
 MudTalkConnectionToServer >> subnegoStream: aBlock [
-	stream nextPut: TelnetParser iacChar;
+	stream
+		nextPut: TelnetParser iacChar;
 		nextPut: TelnetParser sbChar.
 	aBlock value: stream.
-	stream nextPut: TelnetParser iacChar;
-		nextPut: TelnetParser seChar; flush.
+	stream
+		nextPut: TelnetParser iacChar;
+		nextPut: TelnetParser seChar;
+		flush.
 ]
 
 { #category : #server }
@@ -98,7 +112,8 @@ MudTalkConnectionToServer >> text: aText [
 
 { #category : #server }
 MudTalkConnectionToServer >> will: option [ 
-	stream nextPut: TelnetParser iacChar;
+	stream
+		nextPut: TelnetParser iacChar;
 		nextPut: TelnetParser willChar;
 		nextPut: (Character value: option);
 		flush.
@@ -106,7 +121,8 @@ MudTalkConnectionToServer >> will: option [
 
 { #category : #server }
 MudTalkConnectionToServer >> wont: option [
-	stream nextPut: TelnetParser iacChar;
+	stream
+		nextPut: TelnetParser iacChar;
 		nextPut: TelnetParser wontChar;
 		nextPut: (Character value: option);
 		flush.

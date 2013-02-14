@@ -31,14 +31,15 @@ MudTalkClientGmcpHandler >> do: anOption from: server [
 	self sendCoreSupportsSetTo: server
 ]
 
-{ #category : #parsing }
-MudTalkClientGmcpHandler >> gmcpDataParser [
-	^ gmcpDataParser ifNil: [ gmcpDataParser := self newGmcpDataParser ]
-]
-
 { #category : #accessing }
 MudTalkClientGmcpHandler >> gmcpSettings: settings [
 	gmcpSettings := settings
+]
+
+{ #category : #initialization }
+MudTalkClientGmcpHandler >> initialize [
+	super initialize.
+	gmcpDataParser := self newGmcpDataParser
 ]
 
 { #category : #parsing }
@@ -53,13 +54,16 @@ MudTalkClientGmcpHandler >> messageName [
 
 { #category : #parsing }
 MudTalkClientGmcpHandler >> newGmcpDataParser [
-	^ (self messageName , self messageBody)
+	^ (self messageName, self messageBody)
 		==> [ :tokens | MudTalkGmcpMessageData name: (tokens at: 1) data: (tokens at: 2) ]
 ]
 
 { #category : #telnet }
 MudTalkClientGmcpHandler >> sendCoreHelloTo: server [
-	(MudTalkGmcpCoreHello new client: self clientName version: self clientVersion) sendTo: server
+	MudTalkGmcpCoreHello new
+		client: self clientName
+		version: self clientVersion;
+		sendTo: server
 ]
 
 { #category : #telnet }
@@ -73,7 +77,7 @@ MudTalkClientGmcpHandler >> sendCoreSupportsSetTo: server [
 MudTalkClientGmcpHandler >> subnego: anOption data: gmcpData from: server [
 	| parsedGmcp gmcpMessage |
 	gmcpData ifEmpty: [ ^self ].
-	parsedGmcp := self gmcpDataParser parse: gmcpData.
+	parsedGmcp := gmcpDataParser parse: gmcpData.
 	gmcpMessage := gmcpSettings messageFromData: parsedGmcp.
 	announcer announce: gmcpMessage
 ]

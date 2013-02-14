@@ -10,9 +10,10 @@ Class {
 
 { #category : #'telnet commands' }
 MudTalkClientTelnetSettings >> commandHandlerFor: aCommandCode ifEnabled: enabledAction ifAbsent: absentAction [
-	commands at: aCommandCode
-		ifPresent: [ :setting | setting isEnabled ifTrue: [ enabledAction value: setting handler ] ]
-		ifAbsent: [ absentAction value ]
+	commands
+		at: aCommandCode
+		ifPresent: [:setting | setting isEnabled ifTrue: [enabledAction value: setting handler]]
+		ifAbsent: [absentAction value]
 ]
 
 { #category : #'telnet commands' }
@@ -27,7 +28,9 @@ MudTalkClientTelnetSettings >> disableOption: anOption [
 
 { #category : #'telnet commands' }
 MudTalkClientTelnetSettings >> enableCommand: aCommandCode withHandler: aBlock [
-	commands at: aCommandCode put: (MudTalkClientTelnetCommandSetting new handler: aBlock)
+	commands
+		at: aCommandCode
+		put: (MudTalkClientTelnetCommandSetting new handler: aBlock)
 ]
 
 { #category : #'telnet options' }
@@ -37,10 +40,10 @@ MudTalkClientTelnetSettings >> enableOption: anOption withHandler: handler [
 
 { #category : #'telnet options' }
 MudTalkClientTelnetSettings >> handlerFor: anOption [ 
-	handlers at: anOption
+	handlers
+		at: anOption
 		ifPresent: [:handler | ^handler]
 		ifAbsent: [^nil]
-
 ]
 
 { #category : #'telnet options' }

@@ -15,22 +15,25 @@ MudTalkClientGmcpSettings >> enablePackage: packageName [
 
 { #category : #packages }
 MudTalkClientGmcpSettings >> enablePackage: packageName version: packageVersion [
-	self enabledPackages add: (packageName, ' ', packageVersion)
+	enabledPackages add: (packageName, ' ', packageVersion)
 ]
 
 { #category : #packages }
 MudTalkClientGmcpSettings >> enabledPackages [
-	^ enabledPackages ifNil: [ enabledPackages := OrderedCollection new ]
+	^ enabledPackages
 ]
 
-{ #category : #accessing }
-MudTalkClientGmcpSettings >> messageClasses [
-	^ messageClasses ifNil: [ messageClasses := Dictionary new ]
+{ #category : #initialization }
+MudTalkClientGmcpSettings >> initialize [
+	super initialize.
+	enabledPackages := OrderedCollection new.
+	messageClasses := Dictionary new
 ]
 
 { #category : #messages }
 MudTalkClientGmcpSettings >> messageFromData: aMessageData [
-	^ (self messageClasses at: aMessageData messageName) data: aMessageData
+	^ (messageClasses at: aMessageData messageName)
+		data: aMessageData
 ]
 
 { #category : #messages }
@@ -40,5 +43,5 @@ MudTalkClientGmcpSettings >> registerMessage: aMessageClass [
 
 { #category : #messages }
 MudTalkClientGmcpSettings >> registerMessage: aMessageClass withName: aMessageName [
-	self messageClasses at: aMessageName put: aMessageClass
+	messageClasses at: aMessageName put: aMessageClass
 ]

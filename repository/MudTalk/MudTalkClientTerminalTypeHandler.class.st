@@ -16,14 +16,17 @@ MudTalkClientTerminalTypeHandler >> clientTerminalType [
 
 { #category : #telnet }
 MudTalkClientTerminalTypeHandler >> subnego: option data: aByteString from: server [
-	server subnegoStream: [ :stream |
-		stream nextPut: TelnetOption terminalType;
+	server subnegoStream: [:stream |
+		stream
+			nextPut: TelnetOption terminalType;
 			nextPut: TelnetTerminalType is;
-			nextPutAll: self clientTerminalType ]
+			nextPutAll: self clientTerminalType]
 ]
 
 { #category : #telnet }
 MudTalkClientTerminalTypeHandler >> will: option from: server [
 	super will: option from: server.
-	server subnego: self bytesForSend option: TelnetOption terminalType
+	server
+		subnego: self bytesForSend
+		option: TelnetOption terminalType
 ]

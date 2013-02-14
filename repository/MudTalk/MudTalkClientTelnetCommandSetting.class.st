@@ -6,7 +6,7 @@ Class {
 
 { #category : #'telnet options' }
 MudTalkClientTelnetCommandSetting >> ifEnabled: enabledAction [
-	self isEnabled ifTrue: [ enabledAction value: self ]
+	self isEnabled ifTrue: [enabledAction value: self]
 ]
 
 { #category : #accessing }

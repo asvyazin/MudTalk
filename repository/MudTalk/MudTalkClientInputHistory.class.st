@@ -23,14 +23,14 @@ MudTalkClientInputHistory >> initialize [
 
 { #category : #accessing }
 MudTalkClientInputHistory >> nextCommand [
-	position < history size ifTrue: [ position := position + 1 ].
+	position < history size ifTrue: [position := position + 1].
 	^ history at: position
 ]
 
 { #category : #accessing }
 MudTalkClientInputHistory >> previousCommand [
 	| result |
-	position == 0 ifTrue: [ ^ nil ].
+	position == 0 ifTrue: [^nil].
 	result := history at: position.
 	position := position - 1.
 	^ result

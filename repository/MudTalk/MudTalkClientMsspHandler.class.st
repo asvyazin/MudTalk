@@ -19,12 +19,18 @@ MudTalkClientMsspHandler class >> MSSP_VAR [
 
 { #category : #parsing }
 MudTalkClientMsspHandler >> anyChar [
-	^ PPPredicateObjectParser anyExceptAnyOf: { self class MSSP_VAR. self class MSSP_VAL }
+	^ PPPredicateObjectParser anyExceptAnyOf: {self class MSSP_VAR. self class MSSP_VAL}
 ]
 
 { #category : #accessing }
 MudTalkClientMsspHandler >> events [
-	^ events ifNil: [ events := EventManager new ]
+	^ events
+]
+
+{ #category : #initialization }
+MudTalkClientMsspHandler >> initialize [
+	super initialize.
+	events := EventManager new
 ]
 
 { #category : #parsing }
@@ -34,8 +40,8 @@ MudTalkClientMsspHandler >> makeMsspParam: paramName value: paramValues [
 
 { #category : #parsing }
 MudTalkClientMsspHandler >> msspParam [
-	^ self msspVar, (self msspVal star) ==> [ :tokens |
-		self makeMsspParam: (tokens first) value: (tokens second) ]
+	^ self msspVar, (self msspVal star) ==> [:tokens |
+		self makeMsspParam: (tokens first) value: (tokens second)]
 ]
 
 { #category : #parsing }
@@ -55,7 +61,7 @@ MudTalkClientMsspHandler >> msspVar [
 
 { #category : #accessing }
 MudTalkClientMsspHandler >> params: paramsCollection [
-	self events triggerEvent: #msspParams: with: paramsCollection
+	events triggerEvent: #msspParams: with: paramsCollection
 ]
 
 { #category : #telnet }
