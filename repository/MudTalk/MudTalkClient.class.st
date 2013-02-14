@@ -23,18 +23,15 @@ MudTalkClient class >> openWindowOnHost: aByteString port: aSmallInteger [
 
 { #category : #keybinding }
 MudTalkClient >> actionForEvent: evt ifPresent: anAction [ 
-	self keyBindings do: [ :keyBinding |
-		(keyBinding matchEvent: evt) ifTrue: [ anAction value: (keyBinding action) ] ]
-]
-
-{ #category : #accessing }
-MudTalkClient >> announcer [
-	^ announcer ifNil: [ announcer := Announcer new ]
+	keyBindings
+		do: [:keyBinding | (keyBinding matchEvent: evt)
+			ifTrue: [anAction value: (keyBinding action)]]
 ]
 
 { #category : #keybinding }
 MudTalkClient >> bindKey: aKey to: anAction [ 
-	self keyBindings add: (MudTalkClientKeyBinding new key: aKey action: anAction)
+	keyBindings
+		add: (MudTalkClientKeyBinding new key: aKey action: anAction)
 ]
 
 { #category : #keybinding }
@@ -58,9 +55,10 @@ MudTalkClient >> clearInputPane [
 
 { #category : #telnet }
 MudTalkClient >> command: aTelnetCommand [
-	telnetSettings commandHandlerFor: aTelnetCommand
-		ifEnabled: [ :handler | handler value: aTelnetCommand ]
-		ifAbsent: [ self unknownCommand: aTelnetCommand ]
+	telnetSettings
+		commandHandlerFor: aTelnetCommand
+		ifEnabled: [:handler | handler value: aTelnetCommand]
+		ifAbsent: [self unknownCommand: aTelnetCommand]
 ]
 
 { #category : #connection }
@@ -95,12 +93,13 @@ MudTalkClient >> disconnect [
 
 { #category : #connection }
 MudTalkClient >> disconnected [
-	self window outputText: self connectionClosedText
+	window outputText: self connectionClosedText
 ]
 
 { #category : #telnet }
 MudTalkClient >> do: anOption [
-	telnetSettings ifOption: anOption
+	telnetSettings
+		ifOption: anOption
 		unknown: [self unknownDo: anOption]
 		disabled: [server wont: anOption]
 		ignored: [^self]
@@ -109,7 +108,8 @@ MudTalkClient >> do: anOption [
 
 { #category : #telnet }
 MudTalkClient >> dont: anOption [
-	telnetSettings ifOption: anOption
+	telnetSettings
+		ifOption: anOption
 		unknown: [self unknownDont: anOption]
 		disabled: [server wont: anOption]
 		ignored: [^self]
@@ -118,7 +118,7 @@ MudTalkClient >> dont: anOption [
 
 { #category : #'escape parsing' }
 MudTalkClient >> escapeParser [
-	^ escapeParser ifNil: [ escapeParser := MudTalkClientEscapeParser new ]
+	^ escapeParser
 ]
 
 { #category : #input }
@@ -131,22 +131,21 @@ MudTalkClient >> getOutput [
 	^ nil
 ]
 
-{ #category : #accessing }
-MudTalkClient >> gmcpSettings [
-	^ gmcpSettings ifNil: [ gmcpSettings := MudTalkClientGmcpSettings new ]
-]
-
 { #category : #initialization }
 MudTalkClient >> initialize [
 	super initialize.
-	self initializeTelnetSettings.
+	announcer := Announcer new.
+	escapeParser := MudTalkClientEscapeParser new.
+	inputHistory := MudTalkClientInputHistory new.
+	window := MudTalkClientWindow new on: self.
 	self initializeGmcpSettings.
+	self initializeTelnetSettings.
 	self initializeKeybindings
 ]
 
 { #category : #initialization }
 MudTalkClient >> initializeGmcpSettings [
-	self gmcpSettings
+	gmcpSettings := MudTalkClientGmcpSettings new
 		enablePackage: 'Core';
 		enablePackage: 'Char';
 		enablePackage: 'Char.Skills';
@@ -157,20 +156,22 @@ MudTalkClient >> initializeGmcpSettings [
 		enablePackage: 'IRE.Composer';
 		registerMessage: MudTalkGmcpRoomInfo;
 		registerMessage: MudTalkGmcpRoomWrongdir;
-		registerMessage: MudTalkGmcpCoreGoodbye.
-	self announcer on: MudTalkGmcpMessage send: #debugGmcp: to: self.
+		registerMessage: MudTalkGmcpCoreGoodbye;
+		yourself.
+	announcer on: MudTalkGmcpMessage send: #debugGmcp: to: self.
 ]
 
 { #category : #initialization }
 MudTalkClient >> initializeKeybindings [
-	self window on: #keyStroke send: #keyStroke: to: self.
-	self bindStandardKeys
+	keyBindings := OrderedCollection new.
+	self bindStandardKeys.
+	window on: #keyStroke send: #keyStroke: to: self
+	
 ]
 
 { #category : #initialization }
 MudTalkClient >> initializeTelnetSettings [
-	telnetSettings := MudTalkClientTelnetSettings new.
-	telnetSettings
+	telnetSettings := MudTalkClientTelnetSettings new
 		disableCommand: TelnetCommand GA;
 		disableCommand: TelnetCommand EOR;
 		disableOption: TelnetOption naws;
@@ -183,9 +184,10 @@ MudTalkClient >> initializeTelnetSettings [
 		enableOption: TelnetOption gmcp
 			withHandler:
 				(MudTalkClientGmcpHandler new
-					gmcpSettings: self gmcpSettings;
-					announcer: self announcer;
-					yourself)
+					gmcpSettings: gmcpSettings;
+					announcer: announcer;
+					yourself);
+		yourself
 ]
 
 { #category : #input }
@@ -193,31 +195,23 @@ MudTalkClient >> inputAttributes [
 	^ { TextColor color: Color lightBrown }
 ]
 
-{ #category : #accessing }
-MudTalkClient >> inputHistory [
-	^ inputHistory ifNil: [ inputHistory := MudTalkClientInputHistory new ]
-]
-
 { #category : #'input history' }
 MudTalkClient >> inputHistoryNext [
-	currentInput := self inputHistory nextCommand.
+	currentInput := inputHistory nextCommand.
 	self changed: #getInput
 ]
 
 { #category : #'input history' }
 MudTalkClient >> inputHistoryPrevious [
-	currentInput := self inputHistory previousCommand.
+	currentInput := inputHistory previousCommand.
 	self changed: #getInput
 ]
 
 { #category : #keybinding }
-MudTalkClient >> keyBindings [
-	^ keyBindings ifNil: [ keyBindings := OrderedCollection new ]
-]
-
-{ #category : #keybinding }
 MudTalkClient >> keyStroke: evt [
-	self actionForEvent: evt ifPresent: [ :handler | handler value. ^true ].
+	self
+		actionForEvent: evt
+		ifPresent: [:handler | handler value. ^true].
 	^ false
 ]
 
@@ -233,12 +227,7 @@ MudTalkClient >> msspParamsReceived: msspParamsCollection [
 { #category : #initialization }
 MudTalkClient >> openWindowOnHost: aHost port: aPort [
 	self connectTo: (NetNameResolver addressForName: aHost) port: aPort.
-	self window openInWorld
-]
-
-{ #category : #accessing }
-MudTalkClient >> server [
-	^ server
+	window openInWorld
 ]
 
 { #category : #connection }
@@ -253,7 +242,7 @@ MudTalkClient >> serverText: aText [
 { #category : #input }
 MudTalkClient >> setInput: aText [
 	self serverText: aText.
-	self inputHistory appendCommand: aText.
+	inputHistory appendCommand: aText.
 	self clearInputPane
 ]
 
@@ -263,7 +252,8 @@ MudTalkClient >> setOutput: aModel [
 
 { #category : #telnet }
 MudTalkClient >> subnego: anOption data: aByteString [
-	telnetSettings ifOption: anOption
+	telnetSettings
+		ifOption: anOption
 		unknown: [self unknownSubnego: anOption]
 		disabled: [^self]
 		ignored: [^self]
@@ -272,7 +262,7 @@ MudTalkClient >> subnego: anOption data: aByteString [
 
 { #category : #telnet }
 MudTalkClient >> text: aText [
-	self window outputText: (self escapeParser parse: aText)
+	window outputText: (self escapeParser parse: aText)
 ]
 
 { #category : #telnet }
@@ -284,51 +274,53 @@ MudTalkClient >> unknownCommand: aTelnetCommand [
 
 { #category : #telnet }
 MudTalkClient >> unknownDo: anOption [
-	self trace: 'unknown DO: ';
+	self
+		trace: 'unknown DO: ';
 		traceCr: anOption
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownDont: anOption [
-	self trace: 'unknown DONT: ';
+	self
+		trace: 'unknown DONT: ';
 		traceCr: anOption
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownSubnego: anOption [
-	self trace: 'unknown SUBNEGO: ';
+	self
+		trace: 'unknown SUBNEGO: ';
 		traceCr: anOption
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownWill: anOption [
-	self trace: 'unknown WILL: ';
+	self
+		trace: 'unknown WILL: ';
 		traceCr: anOption
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownWont: anOption [
-	self trace: 'unknown WONT: ';
+	self
+		trace: 'unknown WONT: ';
 		traceCr: anOption
 ]
 
 { #category : #telnet }
 MudTalkClient >> will: anOption [
-	telnetSettings ifOption: anOption
+	telnetSettings
+		ifOption: anOption
 		unknown: [self unknownWill: anOption]
 		disabled: [server dont: anOption]
 		ignored: [^self]
 		enabled: [:handler | handler will: anOption from: server]
 ]
 
-{ #category : #accessing }
-MudTalkClient >> window [
-	^ window ifNil: [ window := MudTalkClientWindow new on: self ]
-]
-
 { #category : #telnet }
 MudTalkClient >> wont: anOption [
-	telnetSettings ifOption: anOption
+	telnetSettings
+		ifOption: anOption
 		unknown: [self unknownWont: anOption]
 		disabled: [server dont: anOption]
 		ignored: [^self]
