@@ -64,9 +64,8 @@ MudTalkClientWindow >> outputPane [
 		outputPane := self
 			newBasicTextEditorFor: self model
 			getText: #getOutput
-			setText: #setOutput:;
-			textColor: Color white;
-			yourself]
+			setText: #setOutput:.
+		outputPane textColor: Color white]
 ]
 
 { #category : #output }
