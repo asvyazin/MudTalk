@@ -26,6 +26,12 @@ MudTalkConnectionToServer >> debugOutputGmcpMessage: message [
 ]
 
 { #category : #server }
+MudTalkConnectionToServer >> disconnect [
+	self traceCr: 'will disconnecting...'.
+	stream close
+]
+
+{ #category : #server }
 MudTalkConnectionToServer >> do: option [
 	stream
 		nextPut: TelnetParser iacChar;

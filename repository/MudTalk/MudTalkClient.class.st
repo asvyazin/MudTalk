@@ -88,7 +88,7 @@ MudTalkClient >> debugGmcp: gmcpMessage [
 
 { #category : #connection }
 MudTalkClient >> disconnect [
-	server ifNotNil: [ server terminate ].
+	server ifNotNil: [server disconnect]
 ]
 
 { #category : #connection }
@@ -315,6 +315,12 @@ MudTalkClient >> will: anOption [
 		disabled: [server dont: anOption]
 		ignored: [^self]
 		enabled: [:handler | handler will: anOption from: server]
+]
+
+{ #category : #updating }
+MudTalkClient >> windowIsClosing [
+	super windowIsClosing.
+	self disconnect
 ]
 
 { #category : #telnet }
