@@ -24,11 +24,20 @@ MudTalkClientWindow class >> buildKeymap: aBuilder [
 { #category : #private }
 MudTalkClientWindow >> inputPane [
 	^ inputPane ifNil: [
-		inputPane := self newBasicTextEditorFor: self model getText: #getInput setText: #setInput:.
-		inputPane textColor: Color white;
+		inputPane := self
+			newBasicTextEditorFor: self model
+			getText: #getInput
+			setText: #setInput:.
+		inputPane
+			textColor: Color white;
 			acceptOnCR: true;
 			alwaysAccept: true;
-			attachKeymapCategory: #MudTalkClientInputPane targetting: self model ]
+			attachKeymapCategory: #MudTalkClientInputPane targetting: self model]
+]
+
+{ #category : #private }
+MudTalkClientWindow >> inputPaneHeight [
+	^ 75
 ]
 
 { #category : #keybindings }
@@ -46,10 +55,10 @@ MudTalkClientWindow >> on: aModel [
 		theme: MudTalkClientTheme new;
 		
 		addMorph: self outputPane
-		fullFrame: (LayoutFrame fractions: (0@0 extent: 1@0.75));
+		fullFrame: ((0@0 corner: 1@1) asLayoutFrame bottomOffset: self inputPaneHeight negated);
 		
 		addMorph: self inputPane
-		fullFrame: (LayoutFrame fractions: (0@0.75 extent: 1@1))
+		fullFrame: ((0@1 corner: 1@1) asLayoutFrame topOffset: self inputPaneHeight negated)
 ]
 
 { #category : #initialization }
