@@ -118,13 +118,13 @@ ConfigurationOfMudTalk >> baseline01: spec [
 			spec
 				className: 'ConfigurationOfPetitParser';
 				loads: #('Core');
-				repository: 'http://source.lukas-renggli.ch/petit' ].
+				repository: 'http://source.lukas-renggli.ch/petit'].
 		spec project: 'NeoJSON Core' with: [
 			spec
 				className: 'ConfigurationOfNeoJSON';
 				loads: #('Core');
-				repository: 'http://mc.stfx.eu/Neo' ].
-		spec package: 'MudTalk' with: [ spec requires: #('PetitParser Core' 'NeoJSON Core') ] ]
+				repository: 'http://mc.stfx.eu/Neo'].
+		spec package: 'MudTalk' with: [ spec requires: #('PetitParser Core' 'NeoJSON Core')]]
 ]
 
 { #category : #accessing }
