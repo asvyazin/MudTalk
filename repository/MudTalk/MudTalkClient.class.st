@@ -137,7 +137,8 @@ MudTalkClient >> initialize [
 	announcer := Announcer new.
 	escapeParser := MudTalkClientEscapeParser new.
 	inputHistory := MudTalkClientInputHistory new.
-	window := MudTalkClientWindow new on: self.
+	window := MudTalkClientWindow labelled: 'MUD client'.
+	window model: self.
 	self initializeGmcpSettings.
 	self initializeTelnetSettings.
 	self initializeKeybindings

@@ -21,6 +21,11 @@ MudTalkClientWindow class >> buildKeymap: aBuilder [
 		do: [ :target |  target inputHistoryNext ]
 ]
 
+{ #category : #theme }
+MudTalkClientWindow class >> theme [
+	^ MudTalkClientTheme new
+]
+
 { #category : #private }
 MudTalkClientWindow >> inputPane [
 	^ inputPane ifNil: [
@@ -48,12 +53,10 @@ MudTalkClientWindow >> keyStroke: evt [
 ]
 
 { #category : #initialization }
-MudTalkClientWindow >> on: aModel [
+MudTalkClientWindow >> model: aModel [
+	super model: aModel.
+	
 	self
-		model: aModel;
-		setLabel: 'MUD client';
-		theme: MudTalkClientTheme new;
-		
 		addMorph: self outputPane
 		fullFrame: ((0@0 corner: 1@1) asLayoutFrame bottomOffset: self inputPaneHeight negated);
 		
