@@ -30,7 +30,18 @@ MudTalkClientEscapeParser >> P [
 
 { #category : #base }
 MudTalkClientEscapeParser >> escapeParser [
-	^ (self CSI, self P star, self I star, self F) token: MudTalkEscapeToken
+	^ (self CSI, self P star, self I star, self F) ==> [:tokens |
+		MudTalkEscapeToken new
+			parameter: tokens third;
+			intermediate: tokens fourth;
+			final: tokens fifth;
+			yourself]
+]
+
+{ #category : #initialization }
+MudTalkClientEscapeParser >> initialize [
+	super initialize.
+	parser := self newParser
 ]
 
 { #category : #base }
@@ -41,13 +52,8 @@ MudTalkClientEscapeParser >> newParser [
 { #category : #base }
 MudTalkClientEscapeParser >> parse: aText [
 	| tokens processor |
-	tokens := self parser parse: aText.
+	tokens := parser parse: aText.
 	processor := MudTalkClientEscapeProcessor new.
 	tokens do: [ :token | token processEscapeTokenWith: processor ].
 	^ processor currentText
-]
-
-{ #category : #base }
-MudTalkClientEscapeParser >> parser [
-	^ parser ifNil: [ parser := self newParser ]
 ]

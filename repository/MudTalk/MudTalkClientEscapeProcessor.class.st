@@ -26,11 +26,6 @@ MudTalkClientEscapeProcessor >> character: aCharacter [
 	self appendCharacter: aCharacter withAttributes: self currentAttributes
 ]
 
-{ #category : #'text attributes parsing' }
-MudTalkClientEscapeProcessor >> csi [
-	^ (Character value: 16r1B) asParser, (Character value: 16r5B) asParser
-]
-
 { #category : #accessing }
 MudTalkClientEscapeProcessor >> currentAttributes [
 	^ currentAttributes ifNil: [ ^ self defaultAttributes ]
@@ -59,17 +54,16 @@ MudTalkClientEscapeProcessor >> defaultTextAttribute [
 { #category : #protocol }
 MudTalkClientEscapeProcessor >> escape: anEscape [
 	| attributes |
-	attributes := textAttributeParser parse: anEscape inputValue.
-	attributes isPetitFailure
-		ifTrue: [ self unknownEscape: anEscape ]
-		ifFalse: [ self currentAttributes: attributes ]
+	(anEscape isTextAttributesEscapeSequence)
+		ifFalse: [self unknownEscape: anEscape]
+		ifTrue: [self currentAttributes: (textAttributeParser parse: (anEscape parameter))]
 ]
 
 { #category : #initialization }
 MudTalkClientEscapeProcessor >> initialize [
 	currentText := '' asText.
 	escapeTextAttributes := self newEscapeTextAttributes.
-	textAttributeParser := self newTextAttributeParser
+	textAttributeParser := self textAttributes end
 ]
 
 { #category : #'text attributes parsing' }
@@ -89,23 +83,13 @@ MudTalkClientEscapeProcessor >> newEscapeTextAttributes [
 ]
 
 { #category : #'text attributes parsing' }
-MudTalkClientEscapeProcessor >> newTextAttributeParser [
-	^ self csi, self textAttributes, self textAttributeFinisher end ==> #third
-]
-
-{ #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttribute [
-	^ #digit asParser plus flatten ==> [:str | str asInteger]
+	^ #digit asParser plus flatten ==> [:str | (String withAll: str) asInteger]
 ]
 
 { #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttributeDelimiter [
 	^ $; asParser
-]
-
-{ #category : #'text attributes parsing' }
-MudTalkClientEscapeProcessor >> textAttributeFinisher [
-	^ $m asParser
 ]
 
 { #category : #'text attributes parsing' }
