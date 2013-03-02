@@ -59,20 +59,17 @@ MudTalkClientEscapeProcessor >> defaultTextAttribute [
 { #category : #protocol }
 MudTalkClientEscapeProcessor >> escape: anEscape [
 	| attributes |
-	attributes := self textAttributeParser parse: anEscape value.
+	attributes := textAttributeParser parse: anEscape inputValue.
 	attributes isPetitFailure
 		ifTrue: [ self unknownEscape: anEscape ]
 		ifFalse: [ self currentAttributes: attributes ]
 ]
 
-{ #category : #'text attributes parsing' }
-MudTalkClientEscapeProcessor >> escapeTextAttributes [
-	^ escapeTextAttributes ifNil: [ escapeTextAttributes := self newEscapeTextAttributes ]
-]
-
 { #category : #initialization }
 MudTalkClientEscapeProcessor >> initialize [
-	currentText := '' asText
+	currentText := '' asText.
+	escapeTextAttributes := self newEscapeTextAttributes.
+	textAttributeParser := self newTextAttributeParser
 ]
 
 { #category : #'text attributes parsing' }
@@ -98,7 +95,7 @@ MudTalkClientEscapeProcessor >> newTextAttributeParser [
 
 { #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttribute [
-	^ #digit asParser plus flatten ==> [ :str | str asInteger ]
+	^ #digit asParser plus flatten ==> [:str | str asInteger]
 ]
 
 { #category : #'text attributes parsing' }
@@ -113,12 +110,7 @@ MudTalkClientEscapeProcessor >> textAttributeFinisher [
 
 { #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttributeFromCode: code [
-	^ self escapeTextAttributes at: code
-]
-
-{ #category : #'text attributes parsing' }
-MudTalkClientEscapeProcessor >> textAttributeParser [
-	^ textAttributeParser ifNil: [ textAttributeParser := self newTextAttributeParser ]
+	^ escapeTextAttributes at: code
 ]
 
 { #category : #'text attributes parsing' }
