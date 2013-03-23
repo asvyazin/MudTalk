@@ -117,11 +117,13 @@ ConfigurationOfMudTalk >> baseline01: spec [
 		spec project: 'PetitParser Core' with: [
 			spec
 				className: 'ConfigurationOfPetitParser';
+				versionString: #development;
 				loads: #('Core');
 				repository: 'http://source.lukas-renggli.ch/petit'].
 		spec project: 'NeoJSON Core' with: [
 			spec
 				className: 'ConfigurationOfNeoJSON';
+				versionString: #stable;
 				loads: #('Core');
 				repository: 'http://mc.stfx.eu/Neo'].
 		spec package: 'MudTalk' with: [ spec requires: #('PetitParser Core' 'NeoJSON Core')]]
@@ -133,6 +135,13 @@ ConfigurationOfMudTalk >> customProjectAttributes [
 	For more information see: http://code.google.com/p/metacello/wiki/CustomProjectAttrributes"
 
 	^ #().
+]
+
+{ #category : #'symbolic versions' }
+ConfigurationOfMudTalk >> development: spec [
+	<symbolicVersion: #'development'>
+
+	spec for: #'common' version: '0.1-baseline'
 ]
 
 { #category : #accessing }
