@@ -4,6 +4,12 @@ Class {
 	#category : #'MudTalk-Client'
 }
 
+{ #category : #'class initialization' }
+MudTalkClientTheme class >> initialize [
+	"self initialize"
+	FreeTypeFontProvider current loadFromSystem
+]
+
 { #category : #fonts }
 MudTalkClientTheme >> fixedWidthFontFamily [
 	^ LogicalFontManager current fixedWidthFamilies first familyName
