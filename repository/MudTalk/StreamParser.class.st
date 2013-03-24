@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'stream'
 	],
-	#category : #'MudTalk-Client'
+	#category : #MudTalk
 }
 
 { #category : #accessing }
