@@ -116,6 +116,18 @@ MudTalkClient >> dont: anOption [
 		enabled: [:handler | handler dont: anOption from: server]
 ]
 
+{ #category : #debugging }
+MudTalkClient >> enableTelnetOptionsDebugging [
+	server events
+		when: #do: evaluate: [:option|self traceDo: option];
+		when: #dont: evaluate: [:option|self traceDont: option];
+		when: #will: evaluate: [:option|self traceWill: option];
+		when: #wont: evaluate: [:option|self traceWont: option];
+		when: #subnego:data: evaluate: [:option :data| self traceSubnego: option data: data];
+		when: #command: evaluate: [:option|self traceCommand: option]
+
+]
+
 { #category : #'escape parsing' }
 MudTalkClient >> escapeParser [
 	^ escapeParser
@@ -264,6 +276,36 @@ MudTalkClient >> subnego: anOption data: aByteString [
 { #category : #telnet }
 MudTalkClient >> text: aText [
 	window outputText: (self escapeParser parse: aText)
+]
+
+{ #category : #debugging }
+MudTalkClient >> traceCommand: option [
+	self trace: 'COMMAND: '; traceCr: option
+]
+
+{ #category : #debugging }
+MudTalkClient >> traceDo: option [
+	self trace: 'DO: '; traceCr: option
+]
+
+{ #category : #debugging }
+MudTalkClient >> traceDont: option [
+	self trace: 'DONT: '; traceCr: option
+]
+
+{ #category : #debugging }
+MudTalkClient >> traceSubnego: option data: data [
+	self trace: 'SUBNEGO: '; traceCr: option
+]
+
+{ #category : #debugging }
+MudTalkClient >> traceWill: option [
+	self trace: 'WILL: '; traceCr: option
+]
+
+{ #category : #debugging }
+MudTalkClient >> traceWont: option [
+	self trace: 'WONT: '; traceCr: option
 ]
 
 { #category : #telnet }
