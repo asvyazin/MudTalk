@@ -7,6 +7,11 @@ Class {
 	#category : #MudTalk
 }
 
+{ #category : #initialization }
+TelnetDont class >> option: anOption [ 
+	^ self new option: anOption
+]
+
 { #category : #accessing }
 TelnetDont >> option [
 	^ option
