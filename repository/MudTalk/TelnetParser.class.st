@@ -13,13 +13,18 @@ TelnetParser class >> do [
 ]
 
 { #category : #parsers }
-TelnetParser class >> doHeader [
+TelnetParser class >> doPrefix [
 	^ self iac asParser, self do asParser
 ]
 
 { #category : #constants }
 TelnetParser class >> dont [
 	^ Character value: 254
+]
+
+{ #category : #parsers }
+TelnetParser class >> dontPrefix [
+	^ self iac asParser, self dont asParser
 ]
 
 { #category : #constants }
@@ -37,14 +42,34 @@ TelnetParser class >> se [
 	^ Character value: 240
 ]
 
+{ #category : #parsers }
+TelnetParser class >> subnegoPostfix [
+	^ self iac asParser, self se asParser
+]
+
+{ #category : #parsers }
+TelnetParser class >> subnegoPrefix [
+	^ self iac asParser, self sb asParser
+]
+
 { #category : #constants }
 TelnetParser class >> will [
 	^ Character value: 251
 ]
 
+{ #category : #parsers }
+TelnetParser class >> willPrefix [
+	^ self iac asParser, self will asParser
+]
+
 { #category : #constants }
 TelnetParser class >> wont [
 	^ Character value: 252
+]
+
+{ #category : #parsers }
+TelnetParser class >> wontPrefix [
+	^ self iac asParser, self wont asParser
 ]
 
 { #category : #initialization }
@@ -53,18 +78,13 @@ TelnetParser >> commandParser [
 ]
 
 { #category : #initialization }
-TelnetParser >> doHeader [
-	^ self class iac asParser , self class do asParser
-]
-
-{ #category : #initialization }
 TelnetParser >> doParser [
-	^ self class doHeader, #any asParser ==> #second
+	^ self class doPrefix, #any asParser ==> #second
 ]
 
 { #category : #initialization }
 TelnetParser >> dontParser [
-	^ self class iac asParser, self class dont asParser, #any asParser
+	^ self class dontPrefix, #any asParser ==> #second
 ]
 
 { #category : #initialization }
@@ -91,15 +111,15 @@ TelnetParser >> parse: aStream [
 
 { #category : #initialization }
 TelnetParser >> subnegoParser [
-	^ self class iac asParser, self class sb asParser, #any asParser star, self class iac asParser, self class se asParser
+	^ self class subnegoPrefix, #any asParser star, self class subnegoPostfix ==> #second
 ]
 
 { #category : #initialization }
 TelnetParser >> willParser [
-	^ self class iac asParser, self class will asParser, #any asParser
+	^ self class willPrefix, #any asParser ==> #second
 ]
 
 { #category : #initialization }
 TelnetParser >> wontParser [
-	^ self class iac asParser, self class wont asParser, #any asParser
+	^ self class wontPrefix, #any asParser ==> #second
 ]
