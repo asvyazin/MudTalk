@@ -2,6 +2,7 @@ Class {
 	#name : #TelnetParser,
 	#superclass : #Object,
 	#instVars : [
+		'baseParser',
 		'parser'
 	],
 	#category : #MudTalk
@@ -72,29 +73,50 @@ TelnetParser class >> wontPrefix [
 	^ self iac asParser, self wont asParser
 ]
 
+{ #category : #parsing }
+TelnetParser >> baseParse: aStream [
+	^ baseParser parse: aStream
+]
+
 { #category : #initialization }
 TelnetParser >> commandParser [
-	^ self class iac asParser, #any asParser ==> #second
+	^ (self class iac asParser, self commandToken) ==> #second
+]
+
+{ #category : #initialization }
+TelnetParser >> commandToken [
+	^ #any asParser ==> [ :option | TelnetCommandToken option: option ]
 ]
 
 { #category : #initialization }
 TelnetParser >> doParser [
-	^ self class doPrefix, #any asParser ==> #second
+	^ (self class doPrefix, self doToken) ==> #third
+]
+
+{ #category : #initialization }
+TelnetParser >> doToken [
+	^ #any asParser ==> [ :option | TelnetDoToken option: option ]
 ]
 
 { #category : #initialization }
 TelnetParser >> dontParser [
-	^ self class dontPrefix, #any asParser ==> #second
+	^ (self class dontPrefix, self dontToken) ==> #third
+]
+
+{ #category : #initialization }
+TelnetParser >> dontToken [
+	^ #any asParser ==> [ :option | TelnetDontToken option: option ]
 ]
 
 { #category : #initialization }
 TelnetParser >> initialize [
 	super initialize.
+	baseParser := StreamParser on: (self newBaseParser).
 	parser := StreamParser on: (self newParser)
 ]
 
 { #category : #initialization }
-TelnetParser >> newParser [
+TelnetParser >> newBaseParser [
 	^ (self doParser /
 	 self dontParser /
 	 self willParser /
@@ -104,22 +126,53 @@ TelnetParser >> newParser [
 	 #any asParser) star
 ]
 
+{ #category : #initialization }
+TelnetParser >> newParser [
+	^ (#telnetSubnego asParser /
+		#telnetDo asParser /
+		#telnetDont asParser /
+		#telnetWill asParser /
+		#telnetWont asParser /
+		#telnetCommand asParser /
+		self textParser) star
+]
+
 { #category : #parsing }
 TelnetParser >> parse: aStream [
-	^ parser parse: aStream
+	| telnetTokens |
+	telnetTokens := baseParser parse: aStream.
+	^ parser parse: telnetTokens
 ]
 
 { #category : #initialization }
 TelnetParser >> subnegoParser [
-	^ self class subnegoPrefix, #any asParser star, self class subnegoPostfix ==> #second
+	| postfix |
+	postfix := self class subnegoPostfix.
+	^ (self class subnegoPrefix, #any asParser, (#any asParser starLazy: postfix), postfix) ==> [:tokens |
+		TelnetSubnegoToken option: tokens third data: tokens fourth]
+]
+
+{ #category : #initialization }
+TelnetParser >> textParser [
+	^ #anyCharacter asParser plus ==> [ :chars | String withAll: chars ]
 ]
 
 { #category : #initialization }
 TelnetParser >> willParser [
-	^ self class willPrefix, #any asParser ==> #second
+	^ (self class willPrefix, self willToken) ==> #third
+]
+
+{ #category : #initialization }
+TelnetParser >> willToken [
+	^ #any asParser ==> [ :option | TelnetWillToken option: option ]
 ]
 
 { #category : #initialization }
 TelnetParser >> wontParser [
-	^ self class wontPrefix, #any asParser ==> #second
+	^ (self class wontPrefix, self wontToken) ==> #third
+]
+
+{ #category : #initialization }
+TelnetParser >> wontToken [
+	^ #any asParser ==> [ :option | TelnetWontToken option: option ]
 ]
