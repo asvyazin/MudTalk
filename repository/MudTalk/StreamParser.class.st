@@ -2,38 +2,33 @@ Class {
 	#name : #StreamParser,
 	#superclass : #PPDelegateParser,
 	#instVars : [
-		'stream'
+		'unparsed'
 	],
 	#category : #MudTalk
 }
 
-{ #category : #accessing }
-StreamParser >> appendToUnparsed: aCollection [
-	stream nextPutAll: aCollection.
-	stream reset
-]
-
 { #category : #initialization }
 StreamParser >> initialize [
 	super initialize.
-	stream := ReadWriteStream on: #()
+	unparsed := OrderedCollection new.
+
 ]
 
 { #category : #parsing }
 StreamParser >> parseOn: aStream [
-	| result |
-	self appendToUnparsed: aStream.
-	result := parser parseOn: self unparsed.
-	self unparsed: aStream upToEnd.
+	| result unparsedStream |
+	unparsedStream := (self unparsed, aStream collection) asPetitStream.
+	result := parser parseOn: unparsedStream.
+	self unparsed: unparsedStream upToEnd.
 	^ result
 ]
 
 { #category : #accessing }
 StreamParser >> unparsed [
-	^ stream readStream asPetitStream
+	^ unparsed
 ]
 
 { #category : #accessing }
 StreamParser >> unparsed: aCollection [
-	stream := ReadWriteStream on: aCollection
+	unparsed := aCollection
 ]

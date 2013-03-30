@@ -12,6 +12,11 @@ TelnetSubnegoToken class >> option: anOption data: aData [
 	^ self new option: anOption; data: aData; yourself
 ]
 
+{ #category : #comparing }
+TelnetSubnegoToken >> = anObject [
+	^ (anObject option = option) and: [anObject data = data]
+]
+
 { #category : #accessing }
 TelnetSubnegoToken >> data [
 	^ data
@@ -20,6 +25,11 @@ TelnetSubnegoToken >> data [
 { #category : #accessing }
 TelnetSubnegoToken >> data: aData [
 	data := aData
+]
+
+{ #category : #comparing }
+TelnetSubnegoToken >> hash [
+	^ option hash bitXor: data hash
 ]
 
 { #category : #testing }

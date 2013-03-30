@@ -47,6 +47,23 @@ TelnetParserTests >> setUp [
 ]
 
 { #category : #testing }
+TelnetParserTests >> testAllTokens [
+	self parse: ('abc', sb, 'de', se, 'fg', do, 'hij', will, 'klm', dont, 'nop', wont, 'qrs')
+		expect: { 
+			'abc'.
+			TelnetSubnegoToken option: $d data: {$e}.
+			'fg'.
+			TelnetDoToken option: $h.
+			'ij'.
+			TelnetWillToken option: $k.
+			'lm'.
+			TelnetDontToken option: $n.
+			'op'.
+			TelnetWontToken option: $q.
+			'rs' }.
+]
+
+{ #category : #testing }
 TelnetParserTests >> testCommand [
 	self parse: (iac, 'a') expect: TelnetCommandToken option: $a
 
@@ -65,8 +82,19 @@ TelnetParserTests >> testDont [
 ]
 
 { #category : #testing }
+TelnetParserTests >> testDoubleIac [
+	self parse: (iac, iac, 'abc') expect: {(iac, 'abc')}
+]
+
+{ #category : #testing }
 TelnetParserTests >> testSimpleCharacters [
 	self parse: '123' expect: {'123'}
+]
+
+{ #category : #testing }
+TelnetParserTests >> testStreamParser [
+	self parse: ('abc', iac) expect: { 'abc' }.
+	self parse: 'abc' expect: { TelnetCommandToken option: $a. 'bc' }.
 ]
 
 { #category : #testing }

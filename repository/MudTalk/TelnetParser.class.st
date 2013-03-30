@@ -109,6 +109,11 @@ TelnetParser >> dontToken [
 ]
 
 { #category : #initialization }
+TelnetParser >> doubleIacParser [
+	^ (self class iac asParser, self class iac asParser) ==> [:tokens | self class iac]
+]
+
+{ #category : #initialization }
 TelnetParser >> initialize [
 	super initialize.
 	baseParser := StreamParser on: (self newBaseParser).
@@ -118,12 +123,13 @@ TelnetParser >> initialize [
 { #category : #initialization }
 TelnetParser >> newBaseParser [
 	^ (self doParser /
-	 self dontParser /
-	 self willParser /
-	 self wontParser /
-	 self subnegoParser /
-	 self commandParser /
-	 #any asParser) star
+		self dontParser /
+		self willParser /
+		self wontParser /
+		self subnegoParser /
+		self doubleIacParser /
+		self commandParser /
+		self class iac asParser negate) star
 ]
 
 { #category : #initialization }
