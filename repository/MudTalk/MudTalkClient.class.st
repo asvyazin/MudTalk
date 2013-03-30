@@ -54,25 +54,28 @@ MudTalkClient >> clearInputPane [
 ]
 
 { #category : #telnet }
-MudTalkClient >> command: aTelnetCommand [
+MudTalkClient >> command: anEvent [
+	| option |
+	option := anEvent option.
 	telnetSettings
-		commandHandlerFor: aTelnetCommand
-		ifEnabled: [:handler | handler value: aTelnetCommand]
-		ifAbsent: [self unknownCommand: aTelnetCommand]
+		commandHandlerFor: option
+		ifEnabled: [:handler | handler value: option]
+		ifAbsent: [self unknownCommand: option]
 ]
 
 { #category : #connection }
 MudTalkClient >> connectTo: aHost port: aPort [
 	server := MudTalkConnectionToServer new.
-	server events
-		when: #disconnected send: #disconnected to: self;
-		when: #do: send: #do: to: self;
-		when: #dont: send: #dont: to: self;
-		when: #will: send: #will: to: self;
-		when: #wont: send: #wont: to: self;
-		when: #subnego:data: send: #subnego:data: to: self;
-		when: #command: send: #command: to: self;
-		when: #text: send: #text: to: self.
+	server announcer: announcer.
+	announcer
+		on: TelnetDoEvent send: #do: to: self;
+		on: TelnetDontEvent send: #dont: to:self;
+		on: TelnetWillEvent send: #will: to: self;
+		on: TelnetWontEvent send: #wont: to: self;
+		on: TelnetSubnegoEvent send: #subnego: to: self;
+		on: TelnetCommandEvent send: #command: to: self;
+		on: TelnetTextEvent send: #text: to: self;
+		on: ServerDisconnectedEvent send: #disconnected to: self.
 	server connectTo: aHost port: aPort
 ]
 
@@ -97,35 +100,27 @@ MudTalkClient >> disconnected [
 ]
 
 { #category : #telnet }
-MudTalkClient >> do: anOption [
+MudTalkClient >> do: anEvent [
+	| option |
+	option := anEvent option.
 	telnetSettings
-		ifOption: anOption
-		unknown: [self unknownDo: anOption]
-		disabled: [server wont: anOption]
+		ifOption: option
+		unknown: [self unknownDo: option]
+		disabled: [server wont: option]
 		ignored: [^self]
-		enabled: [:handler | handler do: anOption from: server]
+		enabled: [:handler | handler do: option from: server]
 ]
 
 { #category : #telnet }
-MudTalkClient >> dont: anOption [
+MudTalkClient >> dont: anEvent [
+	| option |
+	option := anEvent option.
 	telnetSettings
-		ifOption: anOption
-		unknown: [self unknownDont: anOption]
-		disabled: [server wont: anOption]
+		ifOption: option
+		unknown: [self unknownDont: option]
+		disabled: [server wont: option]
 		ignored: [^self]
-		enabled: [:handler | handler dont: anOption from: server]
-]
-
-{ #category : #debugging }
-MudTalkClient >> enableTelnetOptionsDebugging [
-	server events
-		when: #do: evaluate: [:option|self traceDo: option];
-		when: #dont: evaluate: [:option|self traceDont: option];
-		when: #will: evaluate: [:option|self traceWill: option];
-		when: #wont: evaluate: [:option|self traceWont: option];
-		when: #subnego:data: evaluate: [:option :data| self traceSubnego: option data: data];
-		when: #command: evaluate: [:option|self traceCommand: option]
-
+		enabled: [:handler | handler dont: option from: server]
 ]
 
 { #category : #'escape parsing' }
@@ -264,48 +259,20 @@ MudTalkClient >> setOutput: aModel [
 ]
 
 { #category : #telnet }
-MudTalkClient >> subnego: anOption data: aByteString [
+MudTalkClient >> subnego: anEvent [
+	| option |
+	option := anEvent option.
 	telnetSettings
-		ifOption: anOption
-		unknown: [self unknownSubnego: anOption]
+		ifOption: option
+		unknown: [self unknownSubnego: option]
 		disabled: [^self]
 		ignored: [^self]
-		enabled: [:handler | handler subnego: anOption data: aByteString from: server]
+		enabled: [:handler | handler subnego: option data: anEvent data from: server]
 ]
 
 { #category : #telnet }
-MudTalkClient >> text: aText [
-	window outputText: (self escapeParser parse: aText)
-]
-
-{ #category : #debugging }
-MudTalkClient >> traceCommand: option [
-	self trace: 'COMMAND: '; traceCr: option
-]
-
-{ #category : #debugging }
-MudTalkClient >> traceDo: option [
-	self trace: 'DO: '; traceCr: option
-]
-
-{ #category : #debugging }
-MudTalkClient >> traceDont: option [
-	self trace: 'DONT: '; traceCr: option
-]
-
-{ #category : #debugging }
-MudTalkClient >> traceSubnego: option data: data [
-	self trace: 'SUBNEGO: '; traceCr: option
-]
-
-{ #category : #debugging }
-MudTalkClient >> traceWill: option [
-	self trace: 'WILL: '; traceCr: option
-]
-
-{ #category : #debugging }
-MudTalkClient >> traceWont: option [
-	self trace: 'WONT: '; traceCr: option
+MudTalkClient >> text: anEvent [
+	window outputText: (self escapeParser parse: anEvent text)
 ]
 
 { #category : #telnet }
@@ -351,13 +318,15 @@ MudTalkClient >> unknownWont: anOption [
 ]
 
 { #category : #telnet }
-MudTalkClient >> will: anOption [
+MudTalkClient >> will: anEvent [
+	| option |
+	option := anEvent option.
 	telnetSettings
-		ifOption: anOption
-		unknown: [self unknownWill: anOption]
-		disabled: [server dont: anOption]
+		ifOption: option
+		unknown: [self unknownWill: option]
+		disabled: [server dont: option]
 		ignored: [^self]
-		enabled: [:handler | handler will: anOption from: server]
+		enabled: [:handler | handler will: option from: server]
 ]
 
 { #category : #updating }
@@ -367,11 +336,13 @@ MudTalkClient >> windowIsClosing [
 ]
 
 { #category : #telnet }
-MudTalkClient >> wont: anOption [
+MudTalkClient >> wont: anEvent [
+	| option |
+	option := anEvent option.
 	telnetSettings
-		ifOption: anOption
-		unknown: [self unknownWont: anOption]
-		disabled: [server dont: anOption]
+		ifOption: option
+		unknown: [self unknownWont: option]
+		disabled: [server dont: option]
 		ignored: [^self]
-		enabled: [:handler | handler wont: anOption from: server]
+		enabled: [:handler | handler wont: option from: server]
 ]

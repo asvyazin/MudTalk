@@ -13,11 +13,11 @@ MudTalkClientWindow class >> buildKeymap: aBuilder [
 	<keymap>
 	(aBuilder shortcut: #historyPrevious)
 		category: #MudTalkClientInputPane
-		default: Character arrowUp asShortcut
+		default: Character arrowUp asKeyCombination
 		do: [ :target | target inputHistoryPrevious ].
 	(aBuilder shortcut: #historyNext)
 		category: #MudTalkClientInputPane
-		default: Character arrowDown asShortcut
+		default: Character arrowDown asKeyCombination
 		do: [ :target |  target inputHistoryNext ]
 ]
 

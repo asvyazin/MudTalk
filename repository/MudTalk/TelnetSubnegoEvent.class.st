@@ -1,6 +1,6 @@
 Class {
-	#name : #TelnetSubnegoToken,
-	#superclass : #TelnetToken,
+	#name : #TelnetSubnegoEvent,
+	#superclass : #TelnetOptionEvent,
 	#instVars : [
 		'data'
 	],
@@ -8,31 +8,31 @@ Class {
 }
 
 { #category : #initialization }
-TelnetSubnegoToken class >> option: anOption data: aData [
+TelnetSubnegoEvent class >> option: anOption data: aData [
 	^ self new option: anOption; data: aData; yourself
 ]
 
 { #category : #comparing }
-TelnetSubnegoToken >> = anObject [
+TelnetSubnegoEvent >> = anObject [
 	^ (anObject option = option) and: [anObject data = data]
 ]
 
 { #category : #accessing }
-TelnetSubnegoToken >> data [
+TelnetSubnegoEvent >> data [
 	^ data
 ]
 
 { #category : #accessing }
-TelnetSubnegoToken >> data: aData [
+TelnetSubnegoEvent >> data: aData [
 	data := aData
 ]
 
 { #category : #comparing }
-TelnetSubnegoToken >> hash [
+TelnetSubnegoEvent >> hash [
 	^ option hash bitXor: data hash
 ]
 
 { #category : #testing }
-TelnetSubnegoToken >> isTelnetSubnego [
+TelnetSubnegoEvent >> isTelnetSubnego [
 	^ true
 ]

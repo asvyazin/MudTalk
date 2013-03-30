@@ -1,33 +1,28 @@
 Class {
-	#name : #TelnetToken,
-	#superclass : #Object,
+	#name : #TelnetOptionEvent,
+	#superclass : #TelnetEvent,
 	#instVars : [
 		'option'
 	],
 	#category : #MudTalk
 }
 
-{ #category : #initialization }
-TelnetToken class >> option: anOption [ 
-	^ self new option: anOption
-]
-
 { #category : #comparing }
-TelnetToken >> = anObject [ 
+TelnetOptionEvent >> = anObject [ 
 	^ anObject option = option
 ]
 
 { #category : #comparing }
-TelnetToken >> hash [ 
+TelnetOptionEvent >> hash [ 
 	^ option hash
 ]
 
 { #category : #accessing }
-TelnetToken >> option [
+TelnetOptionEvent >> option [
 	^ option
 ]
 
 { #category : #accessing }
-TelnetToken >> option: anOption [
+TelnetOptionEvent >> option: anOption [
 	option := anOption
 ]

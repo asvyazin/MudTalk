@@ -85,7 +85,7 @@ TelnetParser >> commandParser [
 
 { #category : #initialization }
 TelnetParser >> commandToken [
-	^ #any asParser ==> [ :option | TelnetCommandToken option: option ]
+	^ #any asParser ==> [:option | TelnetCommandEvent option: option asInteger]
 ]
 
 { #category : #initialization }
@@ -95,7 +95,7 @@ TelnetParser >> doParser [
 
 { #category : #initialization }
 TelnetParser >> doToken [
-	^ #any asParser ==> [ :option | TelnetDoToken option: option ]
+	^ #any asParser ==> [:option | TelnetDoEvent option: option asInteger]
 ]
 
 { #category : #initialization }
@@ -105,7 +105,7 @@ TelnetParser >> dontParser [
 
 { #category : #initialization }
 TelnetParser >> dontToken [
-	^ #any asParser ==> [ :option | TelnetDontToken option: option ]
+	^ #any asParser ==> [:option | TelnetDontEvent option: option asInteger]
 ]
 
 { #category : #initialization }
@@ -155,12 +155,12 @@ TelnetParser >> subnegoParser [
 	| postfix |
 	postfix := self class subnegoPostfix.
 	^ (self class subnegoPrefix, #any asParser, (#any asParser starLazy: postfix), postfix) ==> [:tokens |
-		TelnetSubnegoToken option: tokens third data: tokens fourth]
+		TelnetSubnegoEvent option: tokens third asInteger data: tokens fourth]
 ]
 
 { #category : #initialization }
 TelnetParser >> textParser [
-	^ #anyCharacter asParser plus ==> [ :chars | String withAll: chars ]
+	^ #anyCharacter asParser plus ==> [ :chars | TelnetTextEvent text: (String withAll: chars) ]
 ]
 
 { #category : #initialization }
@@ -170,7 +170,7 @@ TelnetParser >> willParser [
 
 { #category : #initialization }
 TelnetParser >> willToken [
-	^ #any asParser ==> [ :option | TelnetWillToken option: option ]
+	^ #any asParser ==> [:option | TelnetWillEvent option: option asInteger]
 ]
 
 { #category : #initialization }
@@ -180,5 +180,5 @@ TelnetParser >> wontParser [
 
 { #category : #initialization }
 TelnetParser >> wontToken [
-	^ #any asParser ==> [ :option | TelnetWontToken option: option ]
+	^ #any asParser ==> [:option | TelnetWontEvent option: option asInteger]
 ]
