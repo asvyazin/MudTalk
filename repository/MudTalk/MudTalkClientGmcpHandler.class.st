@@ -44,18 +44,18 @@ MudTalkClientGmcpHandler >> initialize [
 
 { #category : #parsing }
 MudTalkClientGmcpHandler >> messageBody [
-	^ #any asParser star flatten trim
+	^ #any asParser star ==> [:chars | String withAll: chars]
 ]
 
 { #category : #parsing }
 MudTalkClientGmcpHandler >> messageName [
-	^ #space asParser negate star flatten
+	^ #space asParser negate star ==> [:chars | String withAll: chars]
 ]
 
 { #category : #parsing }
 MudTalkClientGmcpHandler >> newGmcpDataParser [
-	^ (self messageName, self messageBody)
-		==> [ :tokens | MudTalkGmcpMessageData name: (tokens at: 1) data: (tokens at: 2) ]
+	^ (self messageName, #space asParser plus, self messageBody)
+		==> [:tokens | MudTalkGmcpMessageData name: tokens first data: tokens third]
 ]
 
 { #category : #telnet }
