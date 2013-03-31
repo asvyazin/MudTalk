@@ -6,7 +6,6 @@ Class {
 		'server',
 		'escapeParser',
 		'keyBindings',
-		'msspParams',
 		'telnetSettings',
 		'gmcpSettings',
 		'announcer',
@@ -180,8 +179,8 @@ MudTalkClient >> initializeKeybindings [
 { #category : #initialization }
 MudTalkClient >> initializeTelnetSettings [
 	telnetSettings := MudTalkClientTelnetSettings new
-		disableCommand: TelnetCommand GA;
-		disableCommand: TelnetCommand EOR;
+		disableCommand: TelnetOption ga;
+		disableCommand: TelnetOption eor;
 		disableOption: TelnetOption naws;
 		disableOption: TelnetOption compress;
 		disableOption: TelnetOption compress2;
@@ -221,15 +220,6 @@ MudTalkClient >> keyStroke: evt [
 		actionForEvent: evt
 		ifPresent: [:handler | handler value. ^true].
 	^ false
-]
-
-{ #category : #mssp }
-MudTalkClient >> msspParamsReceived: msspParamsCollection [
-	msspParams := msspParamsCollection.
-	msspParams do: [ :param |
-		self trace: param name;
-			trace: ' = ';
-			traceCr: param values ]
 ]
 
 { #category : #initialization }

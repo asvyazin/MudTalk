@@ -25,6 +25,11 @@ TelnetOption class >> eor [
 ]
 
 { #category : #constants }
+TelnetOption class >> ga [
+	^ 249
+]
+
+{ #category : #constants }
 TelnetOption class >> gmcp [
 	^ 201.
 ]
