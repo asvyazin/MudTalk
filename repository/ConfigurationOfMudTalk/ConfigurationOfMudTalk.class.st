@@ -126,7 +126,13 @@ ConfigurationOfMudTalk >> baseline01: spec [
 				versionString: #stable;
 				loads: #('Core');
 				repository: 'http://mc.stfx.eu/Neo'].
-		spec package: 'MudTalk' with: [ spec requires: #('PetitParser Core' 'NeoJSON Core')]]
+		spec project: 'BabyMock Core' with: [
+			spec
+				className: 'ConfigurationOfBabyMock';
+				versionString: #development;
+				loads: #('Core');
+				repository: 'http://smalltalkhub.com/mc/zeroflag/BabyMock/main'].
+		spec package: 'MudTalk' with: [ spec requires: #('PetitParser Core' 'NeoJSON Core' 'BabyMock Core')]]
 ]
 
 { #category : #accessing }
