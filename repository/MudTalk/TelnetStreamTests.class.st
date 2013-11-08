@@ -15,10 +15,9 @@ TelnetStreamTests >> setUp [
 ]
 
 { #category : #running }
-TelnetStreamTests >> testCharacters [
-	baseStream can receive: #next; answers: $a; answers: (Character value:255); answers: (Character value: 255).
-	self assert: (telnetStream next) equals: (TTCharacter character: $a).
-	self assert: (telnetStream next) equals: (TTCharacter character: (Character value: 255))
+TelnetStreamTests >> testCharacter [
+	baseStream can receive: #next; answers: $a.
+	self assert: (telnetStream next) equals: (TTCharacter character: $a)
 ]
 
 { #category : #running }
@@ -37,6 +36,12 @@ TelnetStreamTests >> testDo [
 TelnetStreamTests >> testDont [
 	baseStream can receive: #next; answers: (Character value:255); answers: (Character value: 254); answers: $a.
 	self assert: (telnetStream next) equals: (TTDont option: $a)
+]
+
+{ #category : #running }
+TelnetStreamTests >> testIacCharacter [
+	baseStream can receive: #next; answers: (Character value:255); answers: (Character value: 255).
+	self assert: (telnetStream next) equals: (TTCharacter character: (Character value: 255))
 ]
 
 { #category : #running }
