@@ -119,7 +119,7 @@ ConfigurationOfMudTalk >> baseline01: spec [
 				className: 'ConfigurationOfPetitParser';
 				versionString: #development;
 				loads: #('Core');
-				repository: 'http://source.lukas-renggli.ch/petit'].
+				repository: 'http://smalltalkhub.com/mc/Moose/PetitParser/main'].
 		spec project: 'NeoJSON Core' with: [
 			spec
 				className: 'ConfigurationOfNeoJSON';
