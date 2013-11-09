@@ -53,6 +53,11 @@ TelnetStream >> initialize [
 	putBackTokens := OrderedCollection new
 ]
 
+{ #category : #testing }
+TelnetStream >> isDataAvailable [
+	^ putBackTokens isNotEmpty or: [baseStream isDataAvailable]
+]
+
 { #category : #accessing }
 TelnetStream >> next [
 	putBackTokens ifNotEmpty: [:c | ^ c removeFirst].

@@ -30,6 +30,7 @@ TelnetTextStreamTests >> assertTextBeforeTelnetSpecialToken: token [
 { #category : #running }
 TelnetTextStreamTests >> setUp [
 	baseStream := context mock: 'TelnetStream'.
+	baseStream can receive: #isDataAvailable; answers: true.
 	stream := TelnetTextStream on: baseStream
 ]
 

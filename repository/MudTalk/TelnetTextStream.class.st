@@ -42,6 +42,7 @@ TelnetTextStream >> next [
 		]
 	] ifTrue: [
 		self addToBuffer: token character.
+		baseStream isDataAvailable ifFalse: [^ self flushBuffer].
 		(token character = (Character cr)) ifTrue: [
 			maybeLf := baseStream next.
 			(maybeLf isTTCharacter and: [maybeLf character = (Character lf)]) ifTrue: [
