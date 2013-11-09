@@ -1,6 +1,6 @@
 Class {
 	#name : #TelnetToken,
-	#superclass : #Object,
+	#superclass : #Announcement,
 	#category : #MudTalk
 }
 

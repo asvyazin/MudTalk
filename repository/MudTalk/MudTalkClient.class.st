@@ -54,12 +54,12 @@ MudTalkClient >> clearInputPane [
 
 { #category : #telnet }
 MudTalkClient >> command: anEvent [
-	| option |
-	option := anEvent option.
+	| code |
+	code := anEvent code.
 	telnetSettings
-		commandHandlerFor: option
-		ifEnabled: [:handler | handler value: option]
-		ifAbsent: [self unknownCommand: option]
+		commandHandlerFor: code
+		ifEnabled: [:handler | handler value: code]
+		ifAbsent: [self unknownCommand: code]
 ]
 
 { #category : #connection }
@@ -67,13 +67,13 @@ MudTalkClient >> connectTo: aHost port: aPort [
 	server := MudTalkConnectionToServer new.
 	server announcer: announcer.
 	announcer
-		on: TelnetDoEvent send: #do: to: self;
-		on: TelnetDontEvent send: #dont: to:self;
-		on: TelnetWillEvent send: #will: to: self;
-		on: TelnetWontEvent send: #wont: to: self;
-		on: TelnetSubnegoEvent send: #subnego: to: self;
-		on: TelnetCommandEvent send: #command: to: self;
-		on: TelnetTextEvent send: #text: to: self;
+		on: TTDo send: #do: to: self;
+		on: TTDont send: #dont: to:self;
+		on: TTWill send: #will: to: self;
+		on: TTWont send: #wont: to: self;
+		on: TTSubnego send: #subnego: to: self;
+		on: TTCommand send: #command: to: self;
+		on: TTText send: #text: to: self;
 		on: ServerDisconnectedEvent send: #disconnected to: self.
 	server connectTo: aHost port: aPort
 ]
@@ -269,42 +269,42 @@ MudTalkClient >> text: anEvent [
 MudTalkClient >> unknownCommand: aTelnetCommand [
 	self
 		trace: 'unknown telnet command: ';
-		traceCr: aTelnetCommand
+		traceCr: (aTelnetCommand asInteger)
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownDo: anOption [
 	self
 		trace: 'unknown DO: ';
-		traceCr: anOption
+		traceCr: (anOption asInteger)
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownDont: anOption [
 	self
 		trace: 'unknown DONT: ';
-		traceCr: anOption
+		traceCr: (anOption asInteger)
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownSubnego: anOption [
 	self
 		trace: 'unknown SUBNEGO: ';
-		traceCr: anOption
+		traceCr: (anOption asInteger)
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownWill: anOption [
 	self
 		trace: 'unknown WILL: ';
-		traceCr: anOption
+		traceCr: (anOption asInteger)
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownWont: anOption [
 	self
 		trace: 'unknown WONT: ';
-		traceCr: anOption
+		traceCr: (anOption asInteger)
 ]
 
 { #category : #telnet }
