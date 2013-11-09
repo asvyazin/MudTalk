@@ -14,7 +14,7 @@ TTCommand class >> code: aCode [
 
 { #category : #comparing }
 TTCommand >> = anObject [
-	^ (anObject class = self class) and: (anObject code = code)
+	^ (anObject class = self class) and: [anObject code = code]
 ]
 
 { #category : #accessing }

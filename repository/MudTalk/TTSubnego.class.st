@@ -14,7 +14,7 @@ TTSubnego class >> option: option body: body [
 
 { #category : #comparing }
 TTSubnego >> = anObject [
-	^ (self class = anObject class) and: (body hasEqualElements: anObject body)
+	^ (self class = anObject class) and: [(body isNil and: anObject body isNil) or: [body hasEqualElements: anObject body]]
 ]
 
 { #category : #accessing }

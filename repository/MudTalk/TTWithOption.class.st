@@ -14,7 +14,7 @@ TTWithOption class >> option: anOption [
 
 { #category : #comparing }
 TTWithOption >> = anObject [
-	^ (anObject class = self class) and: (anObject option = option)
+	^ (anObject class = self class) and: [anObject option = option]
 ]
 
 { #category : #comparing }

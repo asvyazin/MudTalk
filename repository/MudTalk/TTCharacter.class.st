@@ -14,7 +14,7 @@ TTCharacter class >> character: aCharacter [
 
 { #category : #comparing }
 TTCharacter >> = anObject [
-	^ (self class = anObject class) and: (character = anObject character)
+	^ (self class = anObject class) and: [character = anObject character]
 ]
 
 { #category : #accessing }
@@ -30,4 +30,9 @@ TTCharacter >> character: aCharacter [
 { #category : #comparing }
 TTCharacter >> hash [
 	^ character hash
+]
+
+{ #category : #testing }
+TTCharacter >> isTTCharacter [
+	^ true
 ]

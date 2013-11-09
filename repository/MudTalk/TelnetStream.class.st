@@ -2,7 +2,8 @@ Class {
 	#name : #TelnetStream,
 	#superclass : #Object,
 	#instVars : [
-		'baseStream'
+		'baseStream',
+		'putBackTokens'
 	],
 	#category : #MudTalk
 }
@@ -47,13 +48,15 @@ TelnetStream class >> wont [
 	^ Character value: 252
 ]
 
+{ #category : #initialization }
+TelnetStream >> initialize [
+	putBackTokens := OrderedCollection new
+]
+
 { #category : #accessing }
 TelnetStream >> next [
-	| c |
-	c := baseStream next.
-	(c = self class iac)
-		ifFalse: [^ TTCharacter character: c]
-		ifTrue: [^ self nextIac]
+	putBackTokens ifNotEmpty: [:c | ^ c removeFirst].
+	^ self readNext
 ]
 
 { #category : #accessing }
@@ -100,4 +103,18 @@ TelnetStream >> nextIacSbReadBody: body option: option [
 { #category : #initialization }
 TelnetStream >> on: aStream [
 	baseStream := aStream
+]
+
+{ #category : #accessing }
+TelnetStream >> putBack: token [
+	putBackTokens addFirst: token
+]
+
+{ #category : #private }
+TelnetStream >> readNext [
+	| c |
+	c := baseStream next.
+	(c = self class iac)
+		ifFalse: [^ TTCharacter character: c]
+		ifTrue: [^ self nextIac]
 ]

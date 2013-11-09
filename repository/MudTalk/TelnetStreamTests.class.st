@@ -45,6 +45,17 @@ TelnetStreamTests >> testIacCharacter [
 ]
 
 { #category : #running }
+TelnetStreamTests >> testPutBack [
+	baseStream can receive: #next; answers: $a; answers: $b.
+	self assert: (telnetStream next) equals: (TTCharacter character: $a).
+	telnetStream putBack: (TTCharacter character: $c).
+	telnetStream putBack: (TTCharacter character: $d).
+	self assert: (telnetStream next) equals: (TTCharacter character: $d).
+	self assert: (telnetStream next) equals: (TTCharacter character: $c).
+	self assert: (telnetStream next) equals: (TTCharacter character: $b)
+]
+
+{ #category : #running }
 TelnetStreamTests >> testSubnego [
 	baseStream can receive: #next; answers: (Character value:255); answers: (Character value: 250); answers: $a; answers: $b; answers: $c; answers: (Character value: 255); answers: (Character value: 240).
 	self assert: (telnetStream next) equals: (TTSubnego option: $a body: {$b. $c})
