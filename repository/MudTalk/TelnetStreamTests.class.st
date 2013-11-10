@@ -23,19 +23,19 @@ TelnetStreamTests >> testCharacter [
 { #category : #running }
 TelnetStreamTests >> testCommand [
 	baseStream can receive: #next; answers: (Character value:255); answers: $a.
-	self assert: (telnetStream next) equals: (TTCommand code: $a)
+	self assert: (telnetStream next) equals: (TTCommand code: $a asInteger)
 ]
 
 { #category : #running }
 TelnetStreamTests >> testDo [
 	baseStream can receive: #next; answers: (Character value:255); answers: (Character value: 253); answers: $a.
-	self assert: (telnetStream next) equals: (TTDo option: $a)
+	self assert: (telnetStream next) equals: (TTDo option: $a asInteger)
 ]
 
 { #category : #running }
 TelnetStreamTests >> testDont [
 	baseStream can receive: #next; answers: (Character value:255); answers: (Character value: 254); answers: $a.
-	self assert: (telnetStream next) equals: (TTDont option: $a)
+	self assert: (telnetStream next) equals: (TTDont option: $a asInteger)
 ]
 
 { #category : #running }
@@ -58,17 +58,17 @@ TelnetStreamTests >> testPutBack [
 { #category : #running }
 TelnetStreamTests >> testSubnego [
 	baseStream can receive: #next; answers: (Character value:255); answers: (Character value: 250); answers: $a; answers: $b; answers: $c; answers: (Character value: 255); answers: (Character value: 240).
-	self assert: (telnetStream next) equals: (TTSubnego option: $a data: {$b. $c})
+	self assert: (telnetStream next) equals: (TTSubnego option: ($a asInteger) data: {$b. $c})
 ]
 
 { #category : #running }
 TelnetStreamTests >> testWill [
 	baseStream can receive: #next; answers: (Character value:255); answers: (Character value: 251); answers: $a.
-	self assert: (telnetStream next) equals: (TTWill option: $a)
+	self assert: (telnetStream next) equals: (TTWill option: $a asInteger)
 ]
 
 { #category : #running }
 TelnetStreamTests >> testWont [
 	baseStream can receive: #next; answers: (Character value:255); answers: (Character value: 252); answers: $a.
-	self assert: (telnetStream next) equals: (TTWont option: $a)
+	self assert: (telnetStream next) equals: (TTWont option: $a asInteger)
 ]

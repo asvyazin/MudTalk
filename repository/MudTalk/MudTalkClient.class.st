@@ -269,42 +269,42 @@ MudTalkClient >> text: anEvent [
 MudTalkClient >> unknownCommand: aTelnetCommand [
 	self
 		trace: 'unknown telnet command: ';
-		traceCr: (aTelnetCommand asInteger)
+		traceCr: aTelnetCommand
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownDo: anOption [
 	self
 		trace: 'unknown DO: ';
-		traceCr: (anOption asInteger)
+		traceCr: anOption
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownDont: anOption [
 	self
 		trace: 'unknown DONT: ';
-		traceCr: (anOption asInteger)
+		traceCr: anOption
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownSubnego: anOption [
 	self
 		trace: 'unknown SUBNEGO: ';
-		traceCr: (anOption asInteger)
+		traceCr: anOption
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownWill: anOption [
 	self
 		trace: 'unknown WILL: ';
-		traceCr: (anOption asInteger)
+		traceCr: anOption
 ]
 
 { #category : #telnet }
 MudTalkClient >> unknownWont: anOption [
 	self
 		trace: 'unknown WONT: ';
-		traceCr: (anOption asInteger)
+		traceCr: anOption
 ]
 
 { #category : #telnet }

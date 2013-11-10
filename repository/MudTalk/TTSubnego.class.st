@@ -14,7 +14,7 @@ TTSubnego class >> option: option data: data [
 
 { #category : #comparing }
 TTSubnego >> = anObject [
-	^ (self class = anObject class) and: [(data isNil and: anObject body isNil) or: [data hasEqualElements: anObject body]]
+	^ (self class = anObject class) and: [(data isNil and: anObject data isNil) or: [data hasEqualElements: anObject data]]
 ]
 
 { #category : #accessing }

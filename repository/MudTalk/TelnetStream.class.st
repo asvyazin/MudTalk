@@ -74,7 +74,7 @@ TelnetStream >> nextIac [
 	(c = self class will) ifTrue: [^ TTWill option: (baseStream next) asInteger].
 	(c = self class wont) ifTrue: [^ TTWont option: (baseStream next) asInteger].
 	(c = self class sb) ifTrue: [^ self nextIacSb].
-	^ TTCommand code: (baseStream next)
+	^ TTCommand code: c asInteger
 ]
 
 { #category : #accessing }
@@ -92,8 +92,7 @@ TelnetStream >> nextIacSbIacOption: anOption body: body [
 	(c = self class se) ifFalse: [
 		body add: self class iac; add: c.
 		^ self nextIacSbReadBody: body option: anOption
-		] ifTrue: [
-		^ TTSubnego option: anOption data: body ]
+	] ifTrue: [^ TTSubnego option: anOption data: body]
 ]
 
 { #category : #accessing }
