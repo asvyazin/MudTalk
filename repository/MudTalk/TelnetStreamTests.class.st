@@ -58,7 +58,7 @@ TelnetStreamTests >> testPutBack [
 { #category : #running }
 TelnetStreamTests >> testSubnego [
 	baseStream can receive: #next; answers: (Character value:255); answers: (Character value: 250); answers: $a; answers: $b; answers: $c; answers: (Character value: 255); answers: (Character value: 240).
-	self assert: (telnetStream next) equals: (TTSubnego option: $a body: {$b. $c})
+	self assert: (telnetStream next) equals: (TTSubnego option: $a data: {$b. $c})
 ]
 
 { #category : #running }

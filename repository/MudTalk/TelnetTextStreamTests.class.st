@@ -97,7 +97,7 @@ TelnetTextStreamTests >> testNewLineLFCR [
 
 { #category : #tests }
 TelnetTextStreamTests >> testSubnego [
-	self assertTelnetSpecialToken: (TTSubnego option: $a body: #($b $c))
+	self assertTelnetSpecialToken: (TTSubnego option: $a data: #($b $c))
 ]
 
 { #category : #tests }
@@ -117,7 +117,7 @@ TelnetTextStreamTests >> testTextDont [
 
 { #category : #tests }
 TelnetTextStreamTests >> testTextSubnego [
-	self assertTextBeforeTelnetSpecialToken: (TTSubnego option: $a body: #($b $c))
+	self assertTextBeforeTelnetSpecialToken: (TTSubnego option: $a data: #($b $c))
 ]
 
 { #category : #tests }

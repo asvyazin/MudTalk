@@ -69,10 +69,10 @@ TelnetStream >> nextIac [
 	| c |
 	c := baseStream next.
 	(c = self class iac) ifTrue: [^ TTCharacter character: (self class iac)].
-	(c = self class do) ifTrue: [^ TTDo option: (baseStream  next)].
-	(c = self class dont) ifTrue: [^ TTDont option: (baseStream next)].
-	(c = self class will) ifTrue: [^ TTWill option: (baseStream next)].
-	(c = self class wont) ifTrue: [^ TTWont option: (baseStream next)].
+	(c = self class do) ifTrue: [^ TTDo option: (baseStream  next) asInteger].
+	(c = self class dont) ifTrue: [^ TTDont option: (baseStream next) asInteger].
+	(c = self class will) ifTrue: [^ TTWill option: (baseStream next) asInteger].
+	(c = self class wont) ifTrue: [^ TTWont option: (baseStream next) asInteger].
 	(c = self class sb) ifTrue: [^ self nextIacSb].
 	^ TTCommand code: (baseStream next)
 ]
@@ -80,7 +80,7 @@ TelnetStream >> nextIac [
 { #category : #accessing }
 TelnetStream >> nextIacSb [
 	| option body |
-	option := baseStream next.
+	option := baseStream next asInteger.
 	body := OrderedCollection new.
 	^ self nextIacSbReadBody: body option: option
 ]
@@ -93,7 +93,7 @@ TelnetStream >> nextIacSbIacOption: anOption body: body [
 		body add: self class iac; add: c.
 		^ self nextIacSbReadBody: body option: anOption
 		] ifTrue: [
-		^ TTSubnego option: anOption body: body ]
+		^ TTSubnego option: anOption data: body ]
 ]
 
 { #category : #accessing }
