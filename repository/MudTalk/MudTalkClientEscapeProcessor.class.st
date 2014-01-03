@@ -84,7 +84,7 @@ MudTalkClientEscapeProcessor >> newEscapeTextAttributes [
 
 { #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttribute [
-	^ #digit asParser plus flatten ==> [:str | (String withAll: str) asInteger]
+	^ #digit asParser star flatten ==> [:str | self textAttributeFromString: (String withAll: str)]
 ]
 
 { #category : #'text attributes parsing' }
@@ -95,6 +95,11 @@ MudTalkClientEscapeProcessor >> textAttributeDelimiter [
 { #category : #'text attributes parsing' }
 MudTalkClientEscapeProcessor >> textAttributeFromCode: code [
 	^ escapeTextAttributes at: code
+]
+
+{ #category : #'text attributes parsing' }
+MudTalkClientEscapeProcessor >> textAttributeFromString: str [
+	str ifEmpty: [ ^ 0 ] ifNotEmpty: [ ^ str asInteger ]
 ]
 
 { #category : #'text attributes parsing' }
