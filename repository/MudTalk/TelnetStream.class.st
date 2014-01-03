@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'baseStream',
-		'putBackTokens'
+		'putBackTokens',
+		'lineBuffer'
 	],
 	#category : #MudTalk
 }
@@ -48,9 +49,27 @@ TelnetStream class >> wont [
 	^ Character value: 252
 ]
 
+{ #category : #accessing }
+TelnetStream >> flushLineBuffer [
+	| nextLine |
+	nextLine := String withAll: lineBuffer.
+	lineBuffer removeAll.
+	^ TTText text: nextLine
+]
+
+{ #category : #accessing }
+TelnetStream >> flushLineBufferAndPutToken: token [
+	lineBuffer
+		ifEmpty: [^ token]
+		ifNotEmpty: [
+			putBackTokens add: token.
+			^ self flushLineBuffer]
+]
+
 { #category : #initialization }
 TelnetStream >> initialize [
-	putBackTokens := OrderedCollection new
+	putBackTokens := OrderedCollection new.
+	lineBuffer := OrderedCollection new
 ]
 
 { #category : #testing }
@@ -64,17 +83,56 @@ TelnetStream >> next [
 	^ self readNext
 ]
 
+{ #category : #private }
+TelnetStream >> nextCharacter: c [
+	lineBuffer add: c.
+	(c = Character cr)
+		ifTrue: [ ^ self nextCharacterCr ]
+		ifFalse: [ 
+			(c = Character lf)
+				ifTrue: [ ^ self nextCharacterLf ]
+				ifFalse: [ ^ self readNext ] ]
+]
+
+{ #category : #private }
+TelnetStream >> nextCharacterCr [
+	| c token |
+	c := baseStream next.
+	(c = Character lf)
+		ifTrue: [ 
+			lineBuffer add: c.
+			^ self flushLineBuffer ]
+		ifFalse: [ 
+			token := self flushLineBuffer.
+			lineBuffer add: c.
+			^ token ]
+]
+
+{ #category : #private }
+TelnetStream >> nextCharacterLf [
+	| c token |
+	c := baseStream next.
+	(c = Character cr)
+		ifTrue: [ 
+			lineBuffer add: c.
+			^ self flushLineBuffer ]
+		ifFalse: [ 
+			token := self flushLineBuffer.
+			lineBuffer add: c.
+			^ token ]
+]
+
 { #category : #accessing }
 TelnetStream >> nextIac [
 	| c |
 	c := baseStream next.
-	(c = self class iac) ifTrue: [^ TTCharacter character: (self class iac)].
-	(c = self class do) ifTrue: [^ TTDo option: (baseStream  next) asInteger].
-	(c = self class dont) ifTrue: [^ TTDont option: (baseStream next) asInteger].
-	(c = self class will) ifTrue: [^ TTWill option: (baseStream next) asInteger].
-	(c = self class wont) ifTrue: [^ TTWont option: (baseStream next) asInteger].
+	(c = self class iac) ifTrue: [^ self nextCharacter: (self class iac)].
+	(c = self class do) ifTrue: [^ self flushLineBufferAndPutToken: (TTDo option: (baseStream  next) asInteger)].
+	(c = self class dont) ifTrue: [^ self flushLineBufferAndPutToken: (TTDont option: (baseStream next) asInteger)].
+	(c = self class will) ifTrue: [^ self flushLineBufferAndPutToken: (TTWill option: (baseStream next) asInteger)].
+	(c = self class wont) ifTrue: [^ self flushLineBufferAndPutToken: (TTWont option: (baseStream next) asInteger)].
 	(c = self class sb) ifTrue: [^ self nextIacSb].
-	^ TTCommand code: c asInteger
+	^ self flushLineBufferAndPutToken: (TTCommand code: c asInteger)
 ]
 
 { #category : #accessing }
@@ -92,7 +150,7 @@ TelnetStream >> nextIacSbIacOption: anOption body: body [
 	(c = self class se) ifFalse: [
 		body add: self class iac; add: c.
 		^ self nextIacSbReadBody: body option: anOption
-	] ifTrue: [^ TTSubnego option: anOption data: body]
+	] ifTrue: [^ self flushLineBufferAndPutToken: (TTSubnego option: anOption data: body)]
 ]
 
 { #category : #accessing }
@@ -109,16 +167,11 @@ TelnetStream >> on: aStream [
 	baseStream := aStream
 ]
 
-{ #category : #accessing }
-TelnetStream >> putBack: token [
-	putBackTokens addFirst: token
-]
-
 { #category : #private }
 TelnetStream >> readNext [
 	| c |
 	c := baseStream next.
 	(c = self class iac)
-		ifFalse: [^ TTCharacter character: c]
 		ifTrue: [^ self nextIac]
+		ifFalse: [^ self nextCharacter: c]
 ]
