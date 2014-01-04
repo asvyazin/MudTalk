@@ -1,6 +1,12 @@
 Class {
 	#name : #TelnetOption,
 	#superclass : #Object,
+	#instVars : [
+		'option'
+	],
+	#classInstVars : [
+		'optionStrings'
+	],
 	#category : #MudTalk
 }
 
@@ -34,6 +40,31 @@ TelnetOption class >> gmcp [
 	^ 201.
 ]
 
+{ #category : #initialization }
+TelnetOption class >> initialize [
+	"TelnetOption initialize"
+	super initialize.
+	optionStrings := Dictionary new.
+	self initializeOptionStrings
+	
+]
+
+{ #category : #initialization }
+TelnetOption class >> initializeOptionStrings [
+	optionStrings
+		at: self compress put: 'COMPRESS';
+		at: self compress2 put: 'COMPRESS2';
+		at: self echo put: 'ECHO';
+		at: self eor put: 'EOR';
+		at: self gmcp put: 'GMCP';
+		at: self msp put: 'MSP';
+		at: self mssp put: 'MSSP';
+		at: self mxp put: 'MXP';
+		at: self naws put: 'NAWS';
+		at: self suppressGoAhead put: 'SUPPRESS_GO_AHEAD';
+		at: self terminalType put: 'TERMINAL_TYPE'
+]
+
 { #category : #constants }
 TelnetOption class >> msp [
 	^ 90.
@@ -54,6 +85,19 @@ TelnetOption class >> naws [
 	^ 31.
 ]
 
+{ #category : #initialization }
+TelnetOption class >> on: anOption [
+	^ self new on: anOption
+]
+
+{ #category : #strings }
+TelnetOption class >> optionString: anOption [
+	optionStrings
+		at: anOption
+		ifPresent: [ :str | ^ str ]
+		ifAbsent: [ ^ anOption asString ]
+]
+
 { #category : #constants }
 TelnetOption class >> suppressGoAhead [
 	^ 3.
@@ -62,4 +106,24 @@ TelnetOption class >> suppressGoAhead [
 { #category : #constants }
 TelnetOption class >> terminalType [
 	^ 24.
+]
+
+{ #category : #comparing }
+TelnetOption >> = anObject [
+	^ option = (anObject option)
+]
+
+{ #category : #converting }
+TelnetOption >> asString [
+	^ self class optionString: option
+]
+
+{ #category : #comparing }
+TelnetOption >> hash [
+	^ option hash
+]
+
+{ #category : #initialization }
+TelnetOption >> on: anOption [
+	option := anOption
 ]

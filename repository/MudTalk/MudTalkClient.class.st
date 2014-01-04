@@ -305,9 +305,10 @@ MudTalkClient >> setOutput: aModel [
 
 { #category : #'client commands' }
 MudTalkClient >> showNegotiatedOptions [
-	| text |
+	| text telnetOption |
 	negotiatedOptions keysAndValuesDo: [ :option :data |
-		text := 'option: ', option asString, ', server: ', data serverSide asString, ', client: ', data serverSide not asString, ', enabled: ', data enabled asString.
+		telnetOption := TelnetOption on: option.
+		text := 'option: ', telnetOption asString, ', server: ', data serverSide asString, ', client: ', data serverSide not asString, ', enabled: ', data enabled asString.
 		self clientOutput: text ]
 ]
 
