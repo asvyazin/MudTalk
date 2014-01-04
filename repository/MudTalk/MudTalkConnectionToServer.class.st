@@ -9,18 +9,11 @@ Class {
 	#category : #'MudTalk-Client'
 }
 
-{ #category : #accessing }
-MudTalkConnectionToServer >> announcer: anAnnouncer [ 
-	announcer := anAnnouncer
-]
-
 { #category : #initialization }
 MudTalkConnectionToServer >> connectTo: aHost port: aPort [
 	stream := SocketStream openConnectionToHost: aHost port: aPort.
 	stream noTimeout.
-	baseStream := TelnetStream on: stream.
-	[self networkReadLoop]
-		forkNamed: 'MUD client network reading process'
+	baseStream := TelnetStream on: stream
 ]
 
 { #category : #private }
@@ -63,12 +56,8 @@ MudTalkConnectionToServer >> gmcp: message [
 ]
 
 { #category : #private }
-MudTalkConnectionToServer >> networkReadLoop [
-	[[announcer announce: baseStream next] repeat]
-		on: NetworkError
-		do: [:error |
-			error printOn: Transcript.
-			announcer announce: ServerDisconnectedEvent new]
+MudTalkConnectionToServer >> next [
+	^ baseStream next
 ]
 
 { #category : #server }

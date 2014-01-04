@@ -22,6 +22,11 @@ TTText >> hash [
 	^ text hash
 ]
 
+{ #category : #processing }
+TTText >> processWith: processor [
+	processor text: self
+]
+
 { #category : #accessing }
 TTText >> text [
 	^ text

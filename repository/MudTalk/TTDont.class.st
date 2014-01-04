@@ -3,3 +3,8 @@ Class {
 	#superclass : #TTWithOption,
 	#category : #MudTalk
 }
+
+{ #category : #processing }
+TTDont >> processWith: processor [
+	processor dont: self
+]

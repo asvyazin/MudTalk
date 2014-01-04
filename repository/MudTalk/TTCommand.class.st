@@ -31,3 +31,8 @@ TTCommand >> code: aCode [
 TTCommand >> hash [
 	^ code hash
 ]
+
+{ #category : #processing }
+TTCommand >> processWith: processor [
+	processor command: self
+]

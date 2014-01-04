@@ -31,3 +31,8 @@ TTSubnego >> data: anObject [
 TTSubnego >> hash [
 	^ (super hash) bitXor: (data hash)
 ]
+
+{ #category : #processing }
+TTSubnego >> processWith: processor [
+	processor subnego: self
+]

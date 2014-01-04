@@ -8,3 +8,8 @@ Class {
 TelnetToken >> isTTCharacter [
 	^ false
 ]
+
+{ #category : #processing }
+TelnetToken >> processWith: processor [
+	self subclassResponsibility
+]

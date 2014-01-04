@@ -56,6 +56,7 @@ MudTalkClient >> clearInputPane [
 MudTalkClient >> command: anEvent [
 	| code |
 	code := anEvent code.
+	self trace: 'COMMAND: '; traceCr: code.
 	telnetSettings
 		commandHandlerFor: code
 		ifEnabled: [:handler | handler value: code]
@@ -65,17 +66,9 @@ MudTalkClient >> command: anEvent [
 { #category : #connection }
 MudTalkClient >> connectTo: aHost port: aPort [
 	server := MudTalkConnectionToServer new.
-	server announcer: announcer.
-	announcer
-		on: TTDo send: #do: to: self;
-		on: TTDont send: #dont: to:self;
-		on: TTWill send: #will: to: self;
-		on: TTWont send: #wont: to: self;
-		on: TTSubnego send: #subnego: to: self;
-		on: TTCommand send: #command: to: self;
-		on: TTText send: #text: to: self;
-		on: ServerDisconnectedEvent send: #disconnected to: self.
-	server connectTo: aHost port: aPort
+	server connectTo: aHost port: aPort.
+	[ self readLoop ]
+		forkNamed: 'MUD client network reading process'
 ]
 
 { #category : #connection }
@@ -102,6 +95,7 @@ MudTalkClient >> disconnected [
 MudTalkClient >> do: anEvent [
 	| option |
 	option := anEvent option.
+	self trace: 'DO: '; traceCr: option.
 	telnetSettings
 		ifOption: option
 		unknown: [self unknownDo: option]
@@ -114,6 +108,7 @@ MudTalkClient >> do: anEvent [
 MudTalkClient >> dont: anEvent [
 	| option |
 	option := anEvent option.
+	self trace: 'DONT: '; traceCr: option.
 	telnetSettings
 		ifOption: option
 		unknown: [self unknownDont: option]
@@ -228,6 +223,15 @@ MudTalkClient >> openWindowOnHost: aHost port: aPort [
 	window openInWorld
 ]
 
+{ #category : #private }
+MudTalkClient >> readLoop [
+	[ [ server next processWith: self ] repeat ]
+		on: NetworkError 
+		do: [ :error |
+			error printOn: Transcript.
+			self disconnected ]
+]
+
 { #category : #connection }
 MudTalkClient >> serverText: aText [
 	| textForOutput |
@@ -252,6 +256,7 @@ MudTalkClient >> setOutput: aModel [
 MudTalkClient >> subnego: anEvent [
 	| option |
 	option := anEvent option.
+	self trace: 'SUBNEGO: '; traceCr: option.
 	telnetSettings
 		ifOption: option
 		unknown: [self unknownSubnego: option]
@@ -311,6 +316,7 @@ MudTalkClient >> unknownWont: anOption [
 MudTalkClient >> will: anEvent [
 	| option |
 	option := anEvent option.
+	self trace: 'WILL: '; traceCr: option.
 	telnetSettings
 		ifOption: option
 		unknown: [self unknownWill: option]
@@ -329,6 +335,7 @@ MudTalkClient >> windowIsClosing [
 MudTalkClient >> wont: anEvent [
 	| option |
 	option := anEvent option.
+	self trace: 'WONT: '; traceCr: option.
 	telnetSettings
 		ifOption: option
 		unknown: [self unknownWont: option]

@@ -3,3 +3,8 @@ Class {
 	#superclass : #TTWithOption,
 	#category : #MudTalk
 }
+
+{ #category : #processing }
+TTDo >> processWith: processor [
+	processor do: self
+]
