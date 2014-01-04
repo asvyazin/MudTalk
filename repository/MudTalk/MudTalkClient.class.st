@@ -10,7 +10,9 @@ Class {
 		'gmcpSettings',
 		'announcer',
 		'currentInput',
-		'inputHistory'
+		'inputHistory',
+		'negotiatedOptions',
+		'clientCommands'
 	],
 	#category : #'MudTalk-Client'
 }
@@ -25,6 +27,13 @@ MudTalkClient >> actionForEvent: evt ifPresent: anAction [
 	keyBindings
 		do: [:keyBinding | (keyBinding matchEvent: evt)
 			ifTrue: [anAction value: (keyBinding action)]]
+]
+
+{ #category : #telnet }
+MudTalkClient >> addNegotiatedOption: anOption enabled: enabled serverSide: serverSide [
+	negotiatedOptions
+		at: anOption
+		put: (MudTalkClientNegotiatedOption new enabled: enabled; serverSide: serverSide; yourself)
 ]
 
 { #category : #keybinding }
@@ -50,6 +59,19 @@ MudTalkClient >> bindStandardKeys [
 MudTalkClient >> clearInputPane [
 	currentInput := nil.
 	self changed: #getInput
+]
+
+{ #category : #output }
+MudTalkClient >> clientOutput: aText [
+	| textForOutput |
+	textForOutput := aText copy asText.
+	textForOutput append: String cr.
+	window outputText: textForOutput withAttributes: self clientOutputAttributes
+]
+
+{ #category : #output }
+MudTalkClient >> clientOutputAttributes [
+	^ { TextColor color: Color orange }
 ]
 
 { #category : #telnet }
@@ -99,9 +121,13 @@ MudTalkClient >> do: anEvent [
 	telnetSettings
 		ifOption: option
 		unknown: [self unknownDo: option]
-		disabled: [server wont: option]
+		disabled: [
+			self addNegotiatedOption: option enabled: false serverSide: false.
+			server wont: option]
 		ignored: [^self]
-		enabled: [:handler | handler do: option from: server]
+		enabled: [:handler | 
+			self addNegotiatedOption: option enabled: true serverSide: false.
+			handler do: option from: server]
 ]
 
 { #category : #telnet }
@@ -112,9 +138,13 @@ MudTalkClient >> dont: anEvent [
 	telnetSettings
 		ifOption: option
 		unknown: [self unknownDont: option]
-		disabled: [server wont: option]
+		disabled: [
+			self addNegotiatedOption: option enabled: false serverSide: false.
+			server wont: option]
 		ignored: [^self]
-		enabled: [:handler | handler dont: option from: server]
+		enabled: [:handler |
+			self addNegotiatedOption: option enabled: false serverSide: false.
+			handler dont: option from: server]
 ]
 
 { #category : #'escape parsing' }
@@ -135,6 +165,8 @@ MudTalkClient >> getOutput [
 { #category : #initialization }
 MudTalkClient >> initialize [
 	super initialize.
+	clientCommands := Dictionary new.
+	negotiatedOptions := Dictionary new.
 	announcer := Announcer new.
 	escapeParser := MudTalkClientEscapeParser new.
 	inputHistory := MudTalkClientInputHistory new.
@@ -142,7 +174,13 @@ MudTalkClient >> initialize [
 	window model: self.
 	self initializeGmcpSettings.
 	self initializeTelnetSettings.
+	self initializeClientCommands.
 	self initializeKeybindings
+]
+
+{ #category : #initialization }
+MudTalkClient >> initializeClientCommands [
+	self onClientCommand: '/showNegotiatedOptions' do: [ self showNegotiatedOptions ]
 ]
 
 { #category : #initialization }
@@ -217,6 +255,11 @@ MudTalkClient >> keyStroke: evt [
 	^ false
 ]
 
+{ #category : #'client commands' }
+MudTalkClient >> onClientCommand: command do: aBlock [
+	clientCommands at: command put: aBlock
+]
+
 { #category : #initialization }
 MudTalkClient >> openWindowOnHost: aHost port: aPort [
 	self connectTo: (NetNameResolver addressForName: aHost) port: aPort.
@@ -243,13 +286,29 @@ MudTalkClient >> serverText: aText [
 
 { #category : #input }
 MudTalkClient >> setInput: aText [
-	self serverText: aText.
+	| c |
+	c := aText at: 1.
+	(c = $/)
+		ifTrue: [ 
+			clientCommands
+				at: (aText asString)
+				ifPresent: [ :block | block value ]
+				ifAbsent: [ self clientOutput: ('unknown client command: ', aText) ] ]
+		ifFalse: [ self serverText: aText ].
 	inputHistory appendCommand: aText.
 	self clearInputPane
 ]
 
 { #category : #output }
 MudTalkClient >> setOutput: aModel [
+]
+
+{ #category : #'client commands' }
+MudTalkClient >> showNegotiatedOptions [
+	| text |
+	negotiatedOptions keysAndValuesDo: [ :option :data |
+		text := 'option: ', option asString, ', server: ', data serverSide asString, ', client: ', data serverSide not asString, ', enabled: ', data enabled asString.
+		self clientOutput: text ]
 ]
 
 { #category : #telnet }
@@ -320,9 +379,13 @@ MudTalkClient >> will: anEvent [
 	telnetSettings
 		ifOption: option
 		unknown: [self unknownWill: option]
-		disabled: [server dont: option]
+		disabled: [
+			self addNegotiatedOption: option enabled: false serverSide: true.
+			server dont: option]
 		ignored: [^self]
-		enabled: [:handler | handler will: option from: server]
+		enabled: [:handler | 
+			self addNegotiatedOption: option enabled: true serverSide: true.
+			handler will: option from: server]
 ]
 
 { #category : #updating }
@@ -339,7 +402,11 @@ MudTalkClient >> wont: anEvent [
 	telnetSettings
 		ifOption: option
 		unknown: [self unknownWont: option]
-		disabled: [server dont: option]
+		disabled: [
+			self addNegotiatedOption: option enabled: false serverSide: true.
+			server dont: option]
 		ignored: [^self]
-		enabled: [:handler | handler wont: option from: server]
+		enabled: [:handler | 
+			self addNegotiatedOption: option enabled: false serverSide: true.
+			handler wont: option from: server]
 ]
