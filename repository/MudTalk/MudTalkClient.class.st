@@ -144,7 +144,7 @@ MudTalkClient >> dont: anEvent [
 		ignored: [^self]
 		enabled: [:handler |
 			self addNegotiatedOption: option enabled: false serverSide: false.
-			handler dont: option from: server]
+			server wont: option]
 ]
 
 { #category : #'escape parsing' }
@@ -286,9 +286,7 @@ MudTalkClient >> serverText: aText [
 
 { #category : #input }
 MudTalkClient >> setInput: aText [
-	| c |
-	c := aText at: 1.
-	(c = $/)
+	(aText asString isClientSideCommand)
 		ifTrue: [ 
 			clientCommands
 				at: (aText asString)
