@@ -4,7 +4,7 @@ Class {
 	#category : #'MudTalk-Client'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 MudTalkLolamud >> initialize [
 	super initialize.
 	self openWindowOnHost: 'lolamud.net' port: 6969

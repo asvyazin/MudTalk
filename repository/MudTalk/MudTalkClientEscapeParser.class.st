@@ -82,6 +82,14 @@ MudTalkClientEscapeParser >> newEscapeTextAttributes [
 		at: 35 put: (TextColor color: Color magenta);
 		at: 36 put: (TextColor color: Color cyan);
 		at: 37 put: (TextColor color: Color white);
+		at: 40 put: (TextBackgroundColor color: Color black);
+		at: 41 put: (TextBackgroundColor color: Color red);
+		at: 42 put: (TextBackgroundColor color: Color green);
+		at: 43 put: (TextBackgroundColor color: Color yellow);
+		at: 44 put: (TextBackgroundColor color: Color blue);
+		at: 45 put: (TextBackgroundColor color: Color magenta);
+		at: 46 put: (TextBackgroundColor color: Color cyan);
+		at: 47 put: (TextBackgroundColor color: Color white);
 		yourself
 ]
 

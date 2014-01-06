@@ -1,6 +1,9 @@
 Class {
 	#name : #MudTalkClientTerminalTypeHandler,
 	#superclass : #MudTalkClientEnabledOptionHandler,
+	#instVars : [
+		'requestSequenceNumber'
+	],
 	#category : #'MudTalk-Client'
 }
 
@@ -9,18 +12,27 @@ MudTalkClientTerminalTypeHandler >> bytesForSend [
 	^ {(TelnetTerminalType send)} asByteArray
 ]
 
-{ #category : #telnet }
-MudTalkClientTerminalTypeHandler >> clientTerminalType [
-	^ 'MudTalk v0.1'
+{ #category : #initialization }
+MudTalkClientTerminalTypeHandler >> initialize [
+	super initialize.
+	requestSequenceNumber := 0
 ]
 
 { #category : #telnet }
 MudTalkClientTerminalTypeHandler >> subnego: option data: aByteString from: server [
-	server subnegoStream: [:stream |
+	server subnegoStream: [ :stream |
 		stream
 			nextPut: TelnetOption terminalType;
 			nextPut: TelnetTerminalType is;
-			nextPutAll: self clientTerminalType]
+			nextPutAll: self terminalTypeResponse ]
+]
+
+{ #category : #telnet }
+MudTalkClientTerminalTypeHandler >> terminalTypeResponse [
+	requestSequenceNumber := requestSequenceNumber + 1.
+	(requestSequenceNumber = 1) ifTrue: [ ^ 'MUDTALK' ].
+	(requestSequenceNumber = 2) ifTrue: [ ^ 'ANSI' ].
+	^ 'MTTS 5'
 ]
 
 { #category : #telnet }

@@ -27,7 +27,7 @@ TelnetOption class >> echo [
 
 { #category : #constants }
 TelnetOption class >> eor [
-	^ 25.
+	^ 239
 ]
 
 { #category : #constants }
@@ -55,14 +55,21 @@ TelnetOption class >> initializeOptionStrings [
 		at: self compress put: 'COMPRESS';
 		at: self compress2 put: 'COMPRESS2';
 		at: self echo put: 'ECHO';
-		at: self eor put: 'EOR';
+		at: self teloptEor put: 'EOR';
 		at: self gmcp put: 'GMCP';
 		at: self msp put: 'MSP';
 		at: self mssp put: 'MSSP';
+		at: self msdp put: 'MSDP';
 		at: self mxp put: 'MXP';
 		at: self naws put: 'NAWS';
 		at: self suppressGoAhead put: 'SUPPRESS_GO_AHEAD';
-		at: self terminalType put: 'TERMINAL_TYPE'
+		at: self terminalType put: 'TERMINAL_TYPE';
+		at: self newEnviron put: 'NEW_ENVIRON'
+]
+
+{ #category : #constants }
+TelnetOption class >> msdp [
+	^ 69
 ]
 
 { #category : #constants }
@@ -85,6 +92,11 @@ TelnetOption class >> naws [
 	^ 31.
 ]
 
+{ #category : #constants }
+TelnetOption class >> newEnviron [
+	^ 39
+]
+
 { #category : #initialization }
 TelnetOption class >> on: anOption [
 	^ self new on: anOption
@@ -101,6 +113,11 @@ TelnetOption class >> optionString: anOption [
 { #category : #constants }
 TelnetOption class >> suppressGoAhead [
 	^ 3.
+]
+
+{ #category : #constants }
+TelnetOption class >> teloptEor [
+	^ 25.
 ]
 
 { #category : #constants }

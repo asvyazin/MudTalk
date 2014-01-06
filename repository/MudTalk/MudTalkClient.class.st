@@ -219,6 +219,9 @@ MudTalkClient >> initializeTelnetSettings [
 		disableOption: TelnetOption compress2;
 		disableOption: TelnetOption echo;
 		disableOption: TelnetOption suppressGoAhead;
+		disableOption: TelnetOption newEnviron;
+		disableOption: TelnetOption msdp;
+		disableOption: TelnetOption mssp;
 		enableOption: TelnetOption terminalType
 			withHandler: MudTalkClientTerminalTypeHandler new;
 		enableOption: TelnetOption gmcp
