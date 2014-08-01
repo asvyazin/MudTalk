@@ -1,18 +1,18 @@
 Class {
 	#name : #MudTalkClientTheme,
-	#superclass : #PharoTheme,
+	#superclass : #UITheme,
 	#category : #'MudTalk-Client'
 }
 
-{ #category : #'class initialization' }
+{ #category : #fonts }
+MudTalkClientTheme class >> fixedWidthFontFamily [
+	^ LogicalFontManager current fixedWidthFamilies first familyName
+]
+
+{ #category : #initialization }
 MudTalkClientTheme class >> initialize [
 	"self initialize"
 	FreeTypeFontProvider current loadFromSystem
-]
-
-{ #category : #fonts }
-MudTalkClientTheme >> fixedWidthFontFamily [
-	^ LogicalFontManager current fixedWidthFamilies first familyName
 ]
 
 { #category : #fonts }
@@ -28,6 +28,6 @@ MudTalkClientTheme >> textEditorNormalFillStyleFor: aTextEditor [
 { #category : #fonts }
 MudTalkClientTheme >> textFont [
 	^ LogicalFont
-		familyName: (self fixedWidthFontFamily)
-		pointSize: self fontSize
+		familyName: (self class fixedWidthFontFamily)
+		pointSize: self class fontSize
 ]
