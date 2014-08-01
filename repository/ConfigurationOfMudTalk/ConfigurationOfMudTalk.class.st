@@ -117,7 +117,7 @@ ConfigurationOfMudTalk >> baseline01: spec [
 		spec project: 'PetitParser Core' with: [
 			spec
 				className: 'ConfigurationOfPetitParser';
-				versionString: #development;
+				versionString: '1.6-baseline';
 				loads: #('Core');
 				repository: 'http://smalltalkhub.com/mc/Moose/PetitParser/main'].
 		spec project: 'NeoJSON Core' with: [
@@ -129,7 +129,7 @@ ConfigurationOfMudTalk >> baseline01: spec [
 		spec project: 'BabyMock Core' with: [
 			spec
 				className: 'ConfigurationOfBabyMock';
-				versionString: #development;
+				versionString: '1.2-baseline';
 				loads: #('Core');
 				repository: 'http://smalltalkhub.com/mc/zeroflag/BabyMock/main'].
 		spec package: 'MudTalk' with: [ spec requires: #('PetitParser Core' 'NeoJSON Core' 'BabyMock Core')]]
