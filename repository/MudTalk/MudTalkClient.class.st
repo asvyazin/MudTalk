@@ -197,6 +197,7 @@ MudTalkClient >> initializeGmcpSettings [
 		registerMessage: MudTalkGmcpRoomInfo;
 		registerMessage: MudTalkGmcpRoomWrongdir;
 		registerMessage: MudTalkGmcpCoreGoodbye;
+		registerMessage: MudTalkGmcpCharVitals;
 		yourself.
 	announcer on: MudTalkGmcpMessage send: #debugGmcp: to: self.
 ]
