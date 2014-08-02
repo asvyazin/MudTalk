@@ -34,6 +34,7 @@ MudTalkClientWindow >> inputPane [
 			getText: #getInput
 			setText: #setInput:.
 		inputPane
+			color: Color black;
 			textColor: Color white;
 			acceptOnCR: true;
 			alwaysAccept: true;
@@ -77,7 +78,9 @@ MudTalkClientWindow >> outputPane [
 			newBasicTextEditorFor: self model
 			getText: #getOutput
 			setText: #setOutput:.
-		outputPane textColor: Color white]
+		outputPane
+			textColor: Color white;
+			color: Color black ]
 ]
 
 { #category : #output }

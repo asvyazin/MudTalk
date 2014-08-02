@@ -1,6 +1,6 @@
 Class {
 	#name : #MudTalkClientTheme,
-	#superclass : #UITheme,
+	#superclass : #Pharo3Theme,
 	#category : #'MudTalk-Client'
 }
 
@@ -9,15 +9,15 @@ MudTalkClientTheme class >> fixedWidthFontFamily [
 	^ LogicalFontManager current fixedWidthFamilies first familyName
 ]
 
+{ #category : #fonts }
+MudTalkClientTheme class >> fontSize [
+	^ 10
+]
+
 { #category : #initialization }
 MudTalkClientTheme class >> initialize [
 	"self initialize"
 	FreeTypeFontProvider current loadFromSystem
-]
-
-{ #category : #fonts }
-MudTalkClientTheme >> fontSize [
-	^ 10
 ]
 
 { #category : #'fill-styles' }
