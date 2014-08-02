@@ -185,20 +185,7 @@ MudTalkClient >> initializeClientCommands [
 
 { #category : #initialization }
 MudTalkClient >> initializeGmcpSettings [
-	gmcpSettings := MudTalkClientGmcpSettings new
-		enablePackage: 'Core';
-		enablePackage: 'Char';
-		enablePackage: 'Char.Skills';
-		enablePackage: 'Char.Items';
-		enablePackage: 'Room';
-		enablePackage: 'Redirect';
-		enablePackage: 'Debug';
-		enablePackage: 'IRE.Composer';
-		registerMessage: MudTalkGmcpRoomInfo;
-		registerMessage: MudTalkGmcpRoomWrongdir;
-		registerMessage: MudTalkGmcpCoreGoodbye;
-		registerMessage: MudTalkGmcpCharVitals;
-		yourself.
+	gmcpSettings := MudTalkClientGmcpSettings new.
 	announcer on: MudTalkGmcpMessage send: #debugGmcp: to: self.
 ]
 

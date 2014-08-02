@@ -1,17 +1,40 @@
 Class {
 	#name : #MudTalkGmcpMessage,
 	#superclass : #Announcement,
+	#instVars : [
+		'jsonMap'
+	],
 	#category : #'MudTalk-Client'
 }
 
-{ #category : #initialization }
-MudTalkGmcpMessage class >> data: aMessageData [ 
-	^ (NeoJSONReader on: aMessageData messageData readStream) nextAs: self
+{ #category : #accessing }
+MudTalkGmcpMessage >> bodyOn: jsonWriter [
+	jsonWriter nextPut: self jsonMap
 ]
 
 { #category : #accessing }
-MudTalkGmcpMessage >> bodyOn: jsonWriter [
-	jsonWriter nextPut: self
+MudTalkGmcpMessage >> data: aMessageData [
+	| reader data |
+	data := aMessageData messageData.
+	data ifNotEmpty: [
+		reader := NeoJSONReader on: data readStream.
+		reader propertyNamesAsSymbols: true.
+		self jsonMap: reader next ]
+]
+
+{ #category : #initialization }
+MudTalkGmcpMessage >> initialize [
+	jsonMap := Dictionary new
+]
+
+{ #category : #accessing }
+MudTalkGmcpMessage >> jsonMap [
+	^ jsonMap
+]
+
+{ #category : #accessing }
+MudTalkGmcpMessage >> jsonMap: aMap [
+	jsonMap := aMap
 ]
 
 { #category : #printing }

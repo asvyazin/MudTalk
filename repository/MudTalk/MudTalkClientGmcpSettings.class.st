@@ -3,10 +3,21 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'enabledPackages',
-		'messageClasses'
+		'messageClasses',
+		'defaultMessageClass'
 	],
 	#category : #'MudTalk-Client'
 }
+
+{ #category : #accessing }
+MudTalkClientGmcpSettings >> defaultMessageClass [
+	^ defaultMessageClass
+]
+
+{ #category : #accessing }
+MudTalkClientGmcpSettings >> defaultMessageClass: aClass [
+	defaultMessageClass := aClass
+]
 
 { #category : #packages }
 MudTalkClientGmcpSettings >> enablePackage: packageName [
@@ -27,21 +38,28 @@ MudTalkClientGmcpSettings >> enabledPackages [
 MudTalkClientGmcpSettings >> initialize [
 	super initialize.
 	enabledPackages := OrderedCollection new.
-	messageClasses := Dictionary new
+	messageClasses := Dictionary new.
+	defaultMessageClass := MudTalkGmcpMessage
+]
+
+{ #category : #messages }
+MudTalkClientGmcpSettings >> messageClassByName: aMessageName [
+	^ messageClasses at: aMessageName ifAbsent: [ ^ self defaultMessageClass ]
 ]
 
 { #category : #messages }
 MudTalkClientGmcpSettings >> messageFromData: aMessageData [
-	^ (messageClasses at: aMessageData messageName)
-		data: aMessageData
+	^ (self messageClassByName: aMessageData messageName) new
+		data: aMessageData;
+		yourself
 ]
 
 { #category : #messages }
-MudTalkClientGmcpSettings >> registerMessage: aMessageClass [
-	self registerMessage: aMessageClass withName: aMessageClass messageName
-]
-
-{ #category : #messages }
-MudTalkClientGmcpSettings >> registerMessage: aMessageClass withName: aMessageName [
+MudTalkClientGmcpSettings >> registerMessage: aMessageName withClass: aMessageClass [
 	messageClasses at: aMessageName put: aMessageClass
+]
+
+{ #category : #messages }
+MudTalkClientGmcpSettings >> registerMessageClass: aMessageClass [
+	self registerMessage: aMessageClass messageName withClass: aMessageClass
 ]
