@@ -7,6 +7,11 @@ Class {
 	#category : #'MudTalk-Client'
 }
 
+{ #category : #'as yet unclassified' }
+MudTalkGmcpMessage >> at: aSymbol [
+	^ self jsonMap at: aSymbol
+]
+
 { #category : #accessing }
 MudTalkGmcpMessage >> bodyOn: jsonWriter [
 	jsonWriter nextPut: self jsonMap
