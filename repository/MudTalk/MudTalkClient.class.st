@@ -49,9 +49,17 @@ MudTalkClient >> addTrigger: aTrigger [
 ]
 
 { #category : #api }
+MudTalkClient >> aliasParser: aParser do: aBlock [
+	| newAlias |
+	newAlias := MudTalkParserAlias new parser: aParser do: aBlock.
+	self addAlias: newAlias.
+	^ newAlias
+]
+
+{ #category : #api }
 MudTalkClient >> aliasRegex: rxString do: aBlock [
 	| newAlias |
-	newAlias := MudTalkAlias new regex: rxString do: aBlock.
+	newAlias := MudTalkRegexAlias new regex: rxString do: aBlock.
 	self addAlias: newAlias.
 	^ newAlias
 ]
@@ -369,9 +377,17 @@ MudTalkClient >> text: anEvent [
 ]
 
 { #category : #api }
+MudTalkClient >> triggerParser: aParser do: aBlock [
+	| newTrigger |
+	newTrigger := MudTalkParserTrigger new parser: aParser do: aBlock.
+	self addTrigger: newTrigger.
+	^ newTrigger
+]
+
+{ #category : #api }
 MudTalkClient >> triggerRegex: rxString do: aBlock [
 	| newTrigger |
-	newTrigger := MudTalkTrigger new regex: rxString do: aBlock.
+	newTrigger := MudTalkRegexTrigger new regex: rxString do: aBlock.
 	self addTrigger: newTrigger.
 	^ newTrigger
 ]

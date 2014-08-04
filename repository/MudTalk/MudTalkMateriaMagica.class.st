@@ -13,6 +13,23 @@ Class {
 	#category : #'MudTalk-Client'
 }
 
+{ #category : #parsers }
+MudTalkMateriaMagica class >> integerParser [
+	^ #digit asParser plus ==> [ :t | (String withAll: t) asInteger ]
+]
+
+{ #category : #parsers }
+MudTalkMateriaMagica class >> maxVitalParser: aVital [
+	^ self integerParser, '%' asParser, self integerParser trimSpaces, '/' asParser, self integerParser trimSpaces, aVital asParser, '.' asParser ==> [ :t | { t at: 1. t at: 3. t at: 5 } ]
+]
+
+{ #category : #parsers }
+MudTalkMateriaMagica class >> vitalsLineParser [
+	^ '<' asParser, self integerParser, 'hp' asParser trimSpaces,
+		self integerParser, 'sp' asParser trimSpaces,
+		self integerParser, 'st' asParser trimSpaces, '>' asParser ==> [ :t | { t at: 2. t at: 4. t at: 6 } ]
+]
+
 { #category : #accessing }
 MudTalkMateriaMagica >> currentHitPoints: hp [
 	currentHitPoints := hp.
@@ -31,24 +48,24 @@ MudTalkMateriaMagica >> currentStamina: st [
 	materiaMagicaWindow st: currentStamina maxSt: maxStamina
 ]
 
-{ #category : #initialization }
+{ #category : #private }
 MudTalkMateriaMagica >> grabMaxVitals [
 	self traceCr: 'grabbing max vitals'.
 	(self
-		triggerRegex: '[0-9]+\% [0-9]+ \/ ([0-9]+) HP\.'
-		do: [ :m | self maxHitPoints: (m subexpression: 2) asInteger ])
+		triggerParser: (self class maxVitalParser: 'HP')
+		do: [ :m | self maxHitPoints: (m at: 3) asInteger ])
 		oneTime: true.
 	self send: 'score hp'.
 	
 	(self
-		triggerRegex: '[0-9]+\% [0-9]+ \/ ([0-9]+) SP\.'
-		do: [ :m | self maxSpellPoints: (m subexpression: 2) asInteger ])
+		triggerParser: (self class maxVitalParser: 'SP')
+		do: [ :m | self maxSpellPoints: (m at: 3) asInteger ])
 		oneTime: true.
 	self send: 'score sp'.
 	
 	(self
-		triggerRegex: '[0-9]+\% [0-9]+ \/ ([0-9]+) ST\.'
-		do: [ :m | self maxStamina: (m subexpression: 2) asInteger ])
+		triggerParser: (self class maxVitalParser: 'ST')
+		do: [ :m | self maxStamina: (m at: 3) asInteger ])
 		oneTime: true.
 	self send: 'score st'.
 ]
@@ -85,7 +102,7 @@ MudTalkMateriaMagica >> initializeGmcp [
 { #category : #initialization }
 MudTalkMateriaMagica >> initializeTriggers [
 	(self
-		triggerRegex: '<(.+)hp(.+)sp(.+)st>$'
+		triggerParser: self class vitalsLineParser
 		do: [ self grabMaxVitals ])
 		oneTime: true.
 	self

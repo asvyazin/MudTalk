@@ -3,31 +3,22 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'block',
-		'regex',
 		'oneTime'
 	],
 	#category : #'MudTalk-Client'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 MudTalkTrigger >> oneTime [
 	^ oneTime
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 MudTalkTrigger >> oneTime: aBoolean [ 
 	oneTime := aBoolean
 ]
 
-{ #category : #'as yet unclassified' }
-MudTalkTrigger >> regex: rxString do: aBlock [
-	regex := rxString asRegex.
-	block := aBlock
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : #running }
 MudTalkTrigger >> run: aText [
-	(regex search: aText)
-		ifTrue: [ block cull: regex. ^ true ]
-		ifFalse: [ ^ false ]
+	self subclassResponsibility
 ]
