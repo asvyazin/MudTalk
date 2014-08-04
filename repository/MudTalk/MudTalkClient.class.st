@@ -12,7 +12,9 @@ Class {
 		'currentInput',
 		'inputHistory',
 		'negotiatedOptions',
-		'clientCommands'
+		'clientCommands',
+		'triggers',
+		'aliases'
 	],
 	#category : #'MudTalk-Client'
 }
@@ -29,11 +31,29 @@ MudTalkClient >> actionForEvent: evt ifPresent: anAction [
 			ifTrue: [anAction value: (keyBinding action)]]
 ]
 
+{ #category : #private }
+MudTalkClient >> addAlias: anAlias [ 
+	aliases add: anAlias
+]
+
 { #category : #telnet }
 MudTalkClient >> addNegotiatedOption: anOption enabled: enabled serverSide: serverSide [
 	negotiatedOptions
 		at: anOption
 		put: (MudTalkClientNegotiatedOption new enabled: enabled; serverSide: serverSide; yourself)
+]
+
+{ #category : #private }
+MudTalkClient >> addTrigger: aTrigger [
+	triggers add: aTrigger
+]
+
+{ #category : #api }
+MudTalkClient >> aliasRegex: rxString do: aBlock [
+	| newAlias |
+	newAlias := MudTalkAlias new regex: rxString do: aBlock.
+	self addAlias: newAlias.
+	^ newAlias
 ]
 
 { #category : #keybinding }
@@ -165,6 +185,8 @@ MudTalkClient >> getOutput [
 { #category : #initialization }
 MudTalkClient >> initialize [
 	super initialize.
+	triggers := OrderedCollection new.
+	aliases := OrderedCollection new.
 	clientCommands := Dictionary new.
 	negotiatedOptions := Dictionary new.
 	announcer := Announcer new.
@@ -266,6 +288,27 @@ MudTalkClient >> readLoop [
 			self disconnected ]
 ]
 
+{ #category : #private }
+MudTalkClient >> runAliases: aText [
+	| aliasesCopy |
+	aliasesCopy := aliases copy.
+	aliasesCopy do: [ :alias | alias run: aText ]
+]
+
+{ #category : #private }
+MudTalkClient >> runTriggers: aText [
+	| triggersCopy |
+	"self traceCr: 'run triggers on: ', aText."
+	triggersCopy := triggers copy.
+	triggersCopy do: [ :trigger |
+		((trigger run: aText) and: [trigger oneTime]) ifTrue: [ triggers remove: trigger ] ]
+]
+
+{ #category : #api }
+MudTalkClient >> send: aText [
+	self serverText: aText
+]
+
 { #category : #connection }
 MudTalkClient >> serverText: aText [
 	| textForOutput |
@@ -277,6 +320,7 @@ MudTalkClient >> serverText: aText [
 
 { #category : #input }
 MudTalkClient >> setInput: aText [
+	self runAliases: aText.
 	(aText asString isClientSideCommand)
 		ifTrue: [ 
 			clientCommands
@@ -316,7 +360,20 @@ MudTalkClient >> subnego: anEvent [
 
 { #category : #telnet }
 MudTalkClient >> text: anEvent [
-	window outputText: (self escapeParser parse: anEvent text)
+	| str cleanStr |
+	str := anEvent text.
+	self runTriggers: str.
+	cleanStr := self escapeParser cleanEscapesFrom: str.
+	self runTriggers: cleanStr.
+	window outputText: (self escapeParser parse: str)
+]
+
+{ #category : #api }
+MudTalkClient >> triggerRegex: rxString do: aBlock [
+	| newTrigger |
+	newTrigger := MudTalkTrigger new regex: rxString do: aBlock.
+	self addTrigger: newTrigger.
+	^ newTrigger
 ]
 
 { #category : #telnet }

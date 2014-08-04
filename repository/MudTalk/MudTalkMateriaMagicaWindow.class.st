@@ -4,7 +4,10 @@ Class {
 	#instVars : [
 		'currentHitPoints',
 		'currentSpellPoints',
-		'currentStamina'
+		'currentStamina',
+		'maxHitPoints',
+		'maxSpellPoints',
+		'maxStamina'
 	],
 	#category : #'MudTalk-Client'
 }
@@ -15,8 +18,11 @@ MudTalkMateriaMagicaWindow class >> defaultSpec [
 	^ SpecLayout composed
 		newColumn: [ :column | column
 			add: #currentHitPoints;
+			add: #maxHitPoints;
 			add: #currentSpellPoints;
-			add: #currentStamina ];
+			add: #maxSpellPoints;
+			add: #currentStamina;
+			add: #maxStamina ];
 		yourself
 ]
 
@@ -59,8 +65,44 @@ MudTalkMateriaMagicaWindow >> currentStamina: anObject [
 MudTalkMateriaMagicaWindow >> initializeWidgets [
 	currentHitPoints := self instantiate: LabeledText.
 	currentHitPoints label: 'HP'.
+	maxHitPoints := self instantiate: LabeledText.
+	maxHitPoints label: 'Max HP'.
 	currentSpellPoints := self instantiate: LabeledText.
 	currentSpellPoints label: 'SP'.
+	maxSpellPoints := self instantiate: LabeledText.
+	maxSpellPoints label: 'Max SP'.
 	currentStamina := self instantiate: LabeledText.
-	currentStamina label: 'ST'
+	currentStamina label: 'ST'.
+	maxStamina := self instantiate: LabeledText.
+	maxStamina label: 'Max ST'
+]
+
+{ #category : #'as yet unclassified' }
+MudTalkMateriaMagicaWindow >> maxHitPoints [
+	^ maxHitPoints
+]
+
+{ #category : #accessing }
+MudTalkMateriaMagicaWindow >> maxHitPoints: anInteger [ 
+	maxHitPoints text: anInteger asString
+]
+
+{ #category : #'as yet unclassified' }
+MudTalkMateriaMagicaWindow >> maxSpellPoints [
+	^ maxSpellPoints
+]
+
+{ #category : #accessing }
+MudTalkMateriaMagicaWindow >> maxSpellPoints: anInteger [ 
+	maxSpellPoints text: anInteger asString
+]
+
+{ #category : #'as yet unclassified' }
+MudTalkMateriaMagicaWindow >> maxStamina [
+	^ maxStamina
+]
+
+{ #category : #accessing }
+MudTalkMateriaMagicaWindow >> maxStamina: anInteger [ 
+	maxStamina text: anInteger asString
 ]

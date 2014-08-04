@@ -30,6 +30,24 @@ MudTalkClientEscapeParser >> P [
 	^ PPPredicateObjectParser between: (Character value: 16r30) and: (Character value: 16r3F)
 ]
 
+{ #category : #base }
+MudTalkClientEscapeParser >> cleanEscapesFrom: aText [
+	| currentIndex currentText textChunk |
+	currentIndex := 1.
+	currentText := ''.
+	parser matchingRangesIn: aText do: [ :range | |  start stop  |
+		start := range first.
+		stop := range last.
+		(start > currentIndex) ifTrue: [ 
+			textChunk := aText copyFrom: currentIndex to: (start - 1).
+			currentText := currentText, textChunk ].
+		currentIndex := stop + 1 ].
+	(aText size > currentIndex) ifTrue: [
+		textChunk := aText allButFirst: (currentIndex - 1).
+		currentText := currentText, textChunk ].
+	^ currentText
+]
+
 { #category : #accessing }
 MudTalkClientEscapeParser >> currentTextAttributes [
 	^ currentTextAttributes
