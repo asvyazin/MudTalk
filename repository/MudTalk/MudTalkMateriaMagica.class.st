@@ -2,24 +2,33 @@ Class {
 	#name : #MudTalkMateriaMagica,
 	#superclass : #MudTalkClient,
 	#instVars : [
-		'materiaMagicaWindow'
+		'materiaMagicaWindow',
+		'currentHitPoints',
+		'currentSpellPoints',
+		'currentStamina',
+		'maxHitPoints',
+		'maxSpellPoints',
+		'maxStamina'
 	],
 	#category : #'MudTalk-Client'
 }
 
 { #category : #accessing }
-MudTalkMateriaMagica >> currentHitPoints: hp [ 
-	materiaMagicaWindow currentHitPoints: hp
+MudTalkMateriaMagica >> currentHitPoints: hp [
+	currentHitPoints := hp.
+	materiaMagicaWindow hp: currentHitPoints maxHp: maxHitPoints
 ]
 
 { #category : #accessing }
 MudTalkMateriaMagica >> currentSpellPoints: sp [
-	materiaMagicaWindow currentSpellPoints: sp
+	currentSpellPoints := sp.
+	materiaMagicaWindow sp: currentSpellPoints maxSp: maxSpellPoints
 ]
 
 { #category : #accessing }
 MudTalkMateriaMagica >> currentStamina: st [
-	materiaMagicaWindow currentStamina: st
+	currentStamina := st.
+	materiaMagicaWindow st: currentStamina maxSt: maxStamina
 ]
 
 { #category : #initialization }
@@ -85,18 +94,21 @@ MudTalkMateriaMagica >> initializeTriggers [
 ]
 
 { #category : #accessing }
-MudTalkMateriaMagica >> maxHitPoints: anInteger [ 
-	materiaMagicaWindow maxHitPoints: anInteger
+MudTalkMateriaMagica >> maxHitPoints: anInteger [
+	maxHitPoints := anInteger.
+	materiaMagicaWindow hp: currentHitPoints maxHp: maxHitPoints
 ]
 
 { #category : #accessing }
-MudTalkMateriaMagica >> maxSpellPoints: anInteger [ 
-	materiaMagicaWindow maxSpellPoints: anInteger
+MudTalkMateriaMagica >> maxSpellPoints: anInteger [
+	maxSpellPoints := anInteger.
+	materiaMagicaWindow sp: currentSpellPoints maxSp: maxSpellPoints
 ]
 
 { #category : #accessing }
-MudTalkMateriaMagica >> maxStamina: anInteger [ 
-	materiaMagicaWindow maxStamina: anInteger
+MudTalkMateriaMagica >> maxStamina: anInteger [
+	maxStamina := anInteger.
+	materiaMagicaWindow st: currentStamina maxSt: maxStamina
 ]
 
 { #category : #private }
