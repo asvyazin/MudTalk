@@ -129,8 +129,9 @@ MudTalkMateriaMagica >> maxStamina: anInteger [
 ]
 
 { #category : #private }
-MudTalkMateriaMagica >> updateCharVitals: aMessage [ 
-	self currentHitPoints: (aMessage at: #hp);
-		currentSpellPoints: (aMessage at: #sp);
-		currentStamina: (aMessage at: #st)
+MudTalkMateriaMagica >> updateCharVitals: aMessage [
+	aMessage
+		at: #hp ifPresent: [ :hp | self currentHitPoints: hp ];
+		at: #sp ifPresent: [ :sp | self currentSpellPoints: sp ];
+		at: #st ifPresent: [ :st | self currentStamina: st ]
 ]
