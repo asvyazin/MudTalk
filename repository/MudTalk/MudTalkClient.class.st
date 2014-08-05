@@ -12,7 +12,6 @@ Class {
 		'currentInput',
 		'inputHistory',
 		'negotiatedOptions',
-		'clientCommands',
 		'triggers',
 		'aliases'
 	],
@@ -195,7 +194,6 @@ MudTalkClient >> initialize [
 	super initialize.
 	triggers := OrderedCollection new.
 	aliases := OrderedCollection new.
-	clientCommands := Dictionary new.
 	negotiatedOptions := Dictionary new.
 	announcer := Announcer new.
 	escapeParser := MudTalkClientEscapeParser new.
@@ -210,7 +208,7 @@ MudTalkClient >> initialize [
 
 { #category : #initialization }
 MudTalkClient >> initializeClientCommands [
-	self onClientCommand: '/showNegotiatedOptions' do: [ self showNegotiatedOptions ]
+	self aliasRegex: '/showNegotiatedOptions' do: [ self showNegotiatedOptions ]
 ]
 
 { #category : #initialization }
@@ -276,11 +274,6 @@ MudTalkClient >> keyStroke: evt [
 	^ false
 ]
 
-{ #category : #'client commands' }
-MudTalkClient >> onClientCommand: command do: aBlock [
-	clientCommands at: command put: aBlock
-]
-
 { #category : #initialization }
 MudTalkClient >> openWindowOnHost: aHost port: aPort [
 	self connectTo: (NetNameResolver addressForName: aHost) port: aPort.
@@ -298,9 +291,11 @@ MudTalkClient >> readLoop [
 
 { #category : #private }
 MudTalkClient >> runAliases: aText [
-	| aliasesCopy |
+	| aliasesCopy result |
+	result := false.
 	aliasesCopy := aliases copy.
-	aliasesCopy do: [ :alias | alias run: aText ]
+	aliasesCopy do: [ :alias | result := (alias run: aText) or: [ result ] ].
+	^ result
 ]
 
 { #category : #private }
@@ -328,14 +323,7 @@ MudTalkClient >> serverText: aText [
 
 { #category : #input }
 MudTalkClient >> setInput: aText [
-	self runAliases: aText.
-	(aText asString isClientSideCommand)
-		ifTrue: [ 
-			clientCommands
-				at: (aText asString)
-				ifPresent: [ :block | block value ]
-				ifAbsent: [ self clientOutput: ('unknown client command: ', aText) ] ]
-		ifFalse: [ self serverText: aText ].
+	(self runAliases: aText) ifFalse: [ self serverText: aText ].
 	inputHistory appendCommand: aText.
 	self clearInputPane
 ]
