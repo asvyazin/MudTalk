@@ -51,6 +51,7 @@ MudTalkClientGmcpSettings >> messageClassByName: aMessageName [
 MudTalkClientGmcpSettings >> messageFromData: aMessageData [
 	^ (self messageClassByName: aMessageData messageName) new
 		data: aMessageData;
+		messageName: aMessageData messageName;
 		yourself
 ]
 
