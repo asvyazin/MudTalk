@@ -92,7 +92,7 @@ MudTalkClientEscapeParser >> newEscapeTextAttributes [
 	^ Dictionary new
 		at: 0 put: self defaultTextAttribute;
 		at: 1 put: TextEmphasis bold;
-		at: 30 put: (TextColor color: Color black);
+		at: 30 put: (TextColor color: Color gray);
 		at: 31 put: (TextColor color: Color red);
 		at: 32 put: (TextColor color: Color green);
 		at: 33 put: (TextColor color: Color yellow);
