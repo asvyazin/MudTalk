@@ -31,21 +31,51 @@ MudTalkMateriaMagica class >> vitalsLineParser [
 ]
 
 { #category : #accessing }
+MudTalkMateriaMagica >> currentHitPoints [
+	^ currentHitPoints value
+]
+
+{ #category : #accessing }
 MudTalkMateriaMagica >> currentHitPoints: hp [
-	currentHitPoints := hp.
-	materiaMagicaWindow hp: currentHitPoints maxHp: maxHitPoints
+	currentHitPoints value: hp.
+	self changed: #currentHitPointsText
+]
+
+{ #category : #protocol }
+MudTalkMateriaMagica >> currentHitPointsText [
+	^ self textGaugeCurrentValue: self currentHitPoints maxValue: self maxHitPoints.
+]
+
+{ #category : #accessing }
+MudTalkMateriaMagica >> currentSpellPoints [
+	^ currentSpellPoints value
 ]
 
 { #category : #accessing }
 MudTalkMateriaMagica >> currentSpellPoints: sp [
-	currentSpellPoints := sp.
-	materiaMagicaWindow sp: currentSpellPoints maxSp: maxSpellPoints
+	currentSpellPoints value: sp.
+	self changed: #currentSpellPointsText
+]
+
+{ #category : #protocol }
+MudTalkMateriaMagica >> currentSpellPointsText [
+	^ self textGaugeCurrentValue: self currentSpellPoints maxValue: self maxSpellPoints.
+]
+
+{ #category : #accessing }
+MudTalkMateriaMagica >> currentStamina [
+	^ currentStamina value
 ]
 
 { #category : #accessing }
 MudTalkMateriaMagica >> currentStamina: st [
-	currentStamina := st.
-	materiaMagicaWindow st: currentStamina maxSt: maxStamina
+	currentStamina value: st.
+	self changed: #currentStaminaText
+]
+
+{ #category : #protocol }
+MudTalkMateriaMagica >> currentStaminaText [
+	^ self textGaugeCurrentValue: self currentStamina maxValue: self maxStamina.
 ]
 
 { #category : #private }
@@ -73,10 +103,18 @@ MudTalkMateriaMagica >> grabMaxVitals [
 { #category : #initialization }
 MudTalkMateriaMagica >> initialize [
 	super initialize.
+	currentHitPoints := 0 asReactiveVariable.
+	maxHitPoints := 0 asReactiveVariable.
+	currentSpellPoints := 0 asReactiveVariable.
+	maxSpellPoints := 0 asReactiveVariable.
+	currentStamina := 0 asReactiveVariable.
+	maxStamina := 0 asReactiveVariable.
 	self initializeGmcp.
 	self initializeTriggers.
-	materiaMagicaWindow := MudTalkMateriaMagicaWindow new.
-	materiaMagicaWindow openWithSpec.
+	materiaMagicaWindow := MudTalkMateriaMagicaWindow new
+		client: self;
+		yourself.
+	materiaMagicaWindow openInWorld.
 	self openWindowOnHost: 'materiamagica.com' port: 4000
 ]
 
@@ -111,21 +149,43 @@ MudTalkMateriaMagica >> initializeTriggers [
 ]
 
 { #category : #accessing }
+MudTalkMateriaMagica >> maxHitPoints [
+	^ maxHitPoints value
+]
+
+{ #category : #accessing }
 MudTalkMateriaMagica >> maxHitPoints: anInteger [
-	maxHitPoints := anInteger.
-	materiaMagicaWindow hp: currentHitPoints maxHp: maxHitPoints
+	maxHitPoints value: anInteger.
+	self changed: #currentHitPointsText
+]
+
+{ #category : #accessing }
+MudTalkMateriaMagica >> maxSpellPoints [
+	^ maxSpellPoints value
 ]
 
 { #category : #accessing }
 MudTalkMateriaMagica >> maxSpellPoints: anInteger [
-	maxSpellPoints := anInteger.
-	materiaMagicaWindow sp: currentSpellPoints maxSp: maxSpellPoints
+	maxSpellPoints value: anInteger.
+	self changed: #currentSpellPointsText
+]
+
+{ #category : #accessing }
+MudTalkMateriaMagica >> maxStamina [
+	^ maxStamina value
 ]
 
 { #category : #accessing }
 MudTalkMateriaMagica >> maxStamina: anInteger [
-	maxStamina := anInteger.
-	materiaMagicaWindow st: currentStamina maxSt: maxStamina
+	maxStamina value: anInteger.
+	self changed: #currentStaminaText
+]
+
+{ #category : #private }
+MudTalkMateriaMagica >> textGaugeCurrentValue: current maxValue: max [
+	^ (current isNotNil and: [ max isNotNil ])
+		ifTrue: [ current asString, '/', max asString ]
+		ifFalse: [ '0/0' ]
 ]
 
 { #category : #private }
@@ -134,4 +194,22 @@ MudTalkMateriaMagica >> updateCharVitals: aMessage [
 		at: #hp ifPresent: [ :hp | self currentHitPoints: hp ];
 		at: #sp ifPresent: [ :sp | self currentSpellPoints: sp ];
 		at: #st ifPresent: [ :st | self currentStamina: st ]
+]
+
+{ #category : #'protocol events' }
+MudTalkMateriaMagica >> whenHitPointsChangedDo: aBlock [
+	currentHitPoints whenChangedDo: aBlock.
+	maxHitPoints whenChangedDo: aBlock
+]
+
+{ #category : #'protocol events' }
+MudTalkMateriaMagica >> whenSpellPointsChangedDo: aBlock [
+	currentSpellPoints whenChangedDo: aBlock.
+	maxSpellPoints whenChangedDo: aBlock
+]
+
+{ #category : #'protocol events' }
+MudTalkMateriaMagica >> whenStaminaChangedDo: aBlock [
+	currentStamina whenChangedDo: aBlock.
+	maxStamina whenChangedDo: aBlock
 ]
