@@ -77,6 +77,11 @@ MudTalkMateriaMagicaWindow >> currentStaminaText [
 ]
 
 { #category : #initialization }
+MudTalkMateriaMagicaWindow >> initialExtent [
+	^ 300@100
+]
+
+{ #category : #initialization }
 MudTalkMateriaMagicaWindow >> initialize [
 	super initialize.
 	self setLabel: 'MateriaMagica'.
