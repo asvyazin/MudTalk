@@ -103,12 +103,12 @@ MudTalkMateriaMagica >> grabMaxVitals [
 { #category : #initialization }
 MudTalkMateriaMagica >> initialize [
 	super initialize.
-	currentHitPoints := 0 asReactiveVariable.
-	maxHitPoints := 0 asReactiveVariable.
-	currentSpellPoints := 0 asReactiveVariable.
-	maxSpellPoints := 0 asReactiveVariable.
-	currentStamina := 0 asReactiveVariable.
-	maxStamina := 0 asReactiveVariable.
+	currentHitPoints := NewValueHolder value: 0.
+	maxHitPoints := NewValueHolder value: 0.
+	currentSpellPoints := NewValueHolder value: 0.
+	maxSpellPoints := NewValueHolder value: 0.
+	currentStamina := NewValueHolder value: 0.
+	maxStamina := NewValueHolder value: 0.
 	self initializeGmcp.
 	self initializeTriggers.
 	materiaMagicaWindow := MudTalkMateriaMagicaWindow new
@@ -134,7 +134,7 @@ MudTalkMateriaMagica >> initializeGmcp [
 		registerMessageClass: MudTalkGmcpRoomWrongdir;
 		registerMessageClass: MudTalkGmcpCoreGoodbye;
 		registerMessageClass: MudTalkGmcpCharVitals.
-	announcer on: MudTalkGmcpCharVitals send: #updateCharVitals: to: self.
+	announcer when: MudTalkGmcpCharVitals send: #updateCharVitals: to: self.
 ]
 
 { #category : #initialization }

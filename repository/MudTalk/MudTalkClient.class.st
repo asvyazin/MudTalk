@@ -214,7 +214,7 @@ MudTalkClient >> initializeClientCommands [
 { #category : #initialization }
 MudTalkClient >> initializeGmcpSettings [
 	gmcpSettings := MudTalkClientGmcpSettings new.
-	announcer on: MudTalkGmcpMessage send: #debugGmcp: to: self.
+	announcer when: MudTalkGmcpMessage send: #debugGmcp: to: self.
 ]
 
 { #category : #initialization }
