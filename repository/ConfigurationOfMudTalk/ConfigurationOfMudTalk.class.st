@@ -125,7 +125,7 @@ ConfigurationOfMudTalk >> baseline01: spec [
 				className: 'ConfigurationOfNeoJSON';
 				versionString: #stable;
 				loads: #('Core');
-				repository: 'http://mc.stfx.eu/Neo'].
+				repository: 'github://svenvc/NeoJSON:master/repository'].
 		spec project: 'BabyMock Core' with: [
 			spec
 				className: 'ConfigurationOfBabyMock';
