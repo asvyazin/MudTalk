@@ -1,6 +1,6 @@
 Class {
 	#name : #MudTalkClient,
-	#superclass : #Object,
+	#superclass : #Model,
 	#instVars : [
 		'window',
 		'server',
@@ -8,7 +8,6 @@ Class {
 		'keyBindings',
 		'telnetSettings',
 		'gmcpSettings',
-		'announcer',
 		'currentInput',
 		'inputHistory',
 		'negotiatedOptions',
@@ -195,7 +194,6 @@ MudTalkClient >> initialize [
 	triggers := OrderedCollection new.
 	aliases := OrderedCollection new.
 	negotiatedOptions := Dictionary new.
-	announcer := Announcer new.
 	escapeParser := MudTalkClientEscapeParser new.
 	inputHistory := MudTalkClientInputHistory new.
 	window := MudTalkClientWindow labelled: 'MUD client'.

@@ -22,22 +22,24 @@ MudTalkClientWindow class >> buildKeymap: aBuilder [
 ]
 
 { #category : #theme }
-MudTalkClientWindow class >> theme [
-	^ MudTalkClientTheme new
+MudTalkClientWindow class >> textFont [ 
+	^ LogicalFont 
+		familyName: 'Source Code Pro' 
+		pointSize: StandardFonts defaultFont pointSize
 ]
 
 { #category : #private }
 MudTalkClientWindow >> inputPane [
 	^ inputPane ifNil: [
 		inputPane := self
-			newBasicTextEditorFor: self model
+			newTextEditorFor: self model
 			getText: #getInput
 			setText: #setInput:.
+		inputPane announcer when: RubReturnEntered send: #whenReturnEntered: to: self.
 		inputPane
+			textFont: self class textFont;
 			color: Color black;
 			textColor: Color white;
-			acceptOnCR: true;
-			alwaysAccept: true;
 			attachKeymapCategory: #MudTalkClientInputPane targetting: self model]
 ]
 
@@ -75,10 +77,11 @@ MudTalkClientWindow >> openInWorld [
 MudTalkClientWindow >> outputPane [
 	^ outputPane ifNil: [
 		outputPane := self
-			newBasicTextEditorFor: self model
+			newTextEditorFor: self model
 			getText: #getOutput
 			setText: #setOutput:.
 		outputPane
+			textFont: self class textFont;
 			textColor: Color white;
 			color: Color black ]
 ]
@@ -94,4 +97,9 @@ MudTalkClientWindow >> outputText: aText withAttributes: attributes [
 	textCopy := aText copy.
 	attributes do: [:attr | textCopy addAttribute: attr].
 	self outputText: textCopy
+]
+
+{ #category : #input }
+MudTalkClientWindow >> whenReturnEntered: announcement [
+	announcement accepted: true.
 ]
