@@ -22,35 +22,31 @@ MudTalkClientWindow class >> buildKeymap: aBuilder [
 ]
 
 { #category : #theme }
-MudTalkClientWindow class >> theme [
-	^ MudTalkClientTheme new
+MudTalkClientWindow class >> textFont [ 
+	^ LogicalFont 
+		familyName: 'Source Code Pro' 
+		pointSize: StandardFonts defaultFont pointSize
 ]
 
 { #category : #private }
 MudTalkClientWindow >> inputPane [
 	^ inputPane ifNil: [
 		inputPane := self
-			newBasicTextEditorFor: self model
-			getText: #getInput
-			setText: #setInput:.
+			newTextEditorFor: self model inputModel
+			getText: self model inputGetTextSelector
+			setText: self model inputSetTextSelector.
+		inputPane announcer when: RubReturnEntered send: #whenReturnEntered: to: self.
 		inputPane
+			autoAccept: true;
+			textFont: self class textFont;
 			color: Color black;
 			textColor: Color white;
-			acceptOnCR: true;
-			alwaysAccept: true;
 			attachKeymapCategory: #MudTalkClientInputPane targetting: self model]
 ]
 
 { #category : #private }
 MudTalkClientWindow >> inputPaneHeight [
 	^ 75
-]
-
-{ #category : #keybindings }
-MudTalkClientWindow >> keyStroke: evt [
-	self eventHandler ifNotNil: [:eventHandler |
-		(eventHandler keyStroke: evt fromMorph: self) ifTrue: [^true]].
-	^ super keyStroke: evt
 ]
 
 { #category : #initialization }
@@ -75,10 +71,11 @@ MudTalkClientWindow >> openInWorld [
 MudTalkClientWindow >> outputPane [
 	^ outputPane ifNil: [
 		outputPane := self
-			newBasicTextEditorFor: self model
-			getText: #getOutput
-			setText: #setOutput:.
+			newTextEditorFor: self model outputModel
+			getText: self model outputGetTextSelector
+			setText: self model outputSetTextSelector.
 		outputPane
+			textFont: self class textFont;
 			textColor: Color white;
 			color: Color black ]
 ]
@@ -94,4 +91,10 @@ MudTalkClientWindow >> outputText: aText withAttributes: attributes [
 	textCopy := aText copy.
 	attributes do: [:attr | textCopy addAttribute: attr].
 	self outputText: textCopy
+]
+
+{ #category : #input }
+MudTalkClientWindow >> whenReturnEntered: announcement [
+	announcement accepted: true.
+	self model processCurrentInput.
 ]
