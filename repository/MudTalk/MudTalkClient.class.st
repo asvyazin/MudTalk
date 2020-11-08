@@ -8,11 +8,12 @@ Class {
 		'keyBindings',
 		'telnetSettings',
 		'gmcpSettings',
-		'currentInput',
 		'inputHistory',
 		'negotiatedOptions',
 		'triggers',
-		'aliases'
+		'aliases',
+		'inputModel',
+		'outputModel'
 	],
 	#classInstVars : [
 		'window'
@@ -85,8 +86,7 @@ MudTalkClient >> bindStandardKeys [
 
 { #category : #input }
 MudTalkClient >> clearInputPane [
-	currentInput := nil.
-	self changed: #getInput
+	self setInput: ''
 ]
 
 { #category : #output }
@@ -180,16 +180,6 @@ MudTalkClient >> escapeParser [
 	^ escapeParser
 ]
 
-{ #category : #input }
-MudTalkClient >> getInput [
-	^ currentInput
-]
-
-{ #category : #output }
-MudTalkClient >> getOutput [
-	^ nil
-]
-
 { #category : #initialization }
 MudTalkClient >> initialize [
 	super initialize.
@@ -214,7 +204,7 @@ MudTalkClient >> initializeClientCommands [
 { #category : #initialization }
 MudTalkClient >> initializeGmcpSettings [
 	gmcpSettings := MudTalkClientGmcpSettings new.
-	announcer when: MudTalkGmcpMessage send: #debugGmcp: to: self.
+	self announcer when: MudTalkGmcpMessage send: #debugGmcp: to: self.
 ]
 
 { #category : #initialization }
@@ -244,7 +234,7 @@ MudTalkClient >> initializeTelnetSettings [
 			withHandler:
 				(MudTalkClientGmcpHandler new
 					gmcpSettings: gmcpSettings;
-					announcer: announcer;
+					announcer: self announcer;
 					yourself);
 		yourself
 ]
@@ -254,16 +244,29 @@ MudTalkClient >> inputAttributes [
 	^ { TextColor color: Color lightBrown }
 ]
 
+{ #category : #input }
+MudTalkClient >> inputGetTextSelector [
+	^ #value
+]
+
 { #category : #'input history' }
 MudTalkClient >> inputHistoryNext [
-	currentInput := inputHistory nextCommand.
-	self changed: #getInput
+	self setInput: (inputHistory nextCommand)
 ]
 
 { #category : #'input history' }
 MudTalkClient >> inputHistoryPrevious [
-	currentInput := inputHistory previousCommand.
-	self changed: #getInput
+	self setInput: (inputHistory previousCommand)
+]
+
+{ #category : #input }
+MudTalkClient >> inputModel [
+	^ inputModel ifNil: [ inputModel := NewValueHolder new ]
+]
+
+{ #category : #input }
+MudTalkClient >> inputSetTextSelector [
+	^ #value:
 ]
 
 { #category : #keybinding }
@@ -278,6 +281,35 @@ MudTalkClient >> keyStroke: evt [
 MudTalkClient >> openWindowOnHost: aHost port: aPort [
 	self connectTo: (NetNameResolver addressForName: aHost) port: aPort.
 	window openInWorld
+]
+
+{ #category : #output }
+MudTalkClient >> outputGetTextSelector [
+	^ #value
+]
+
+{ #category : #output }
+MudTalkClient >> outputModel [
+	^ outputModel ifNil: [ outputModel := NewValueHolder new ]
+]
+
+{ #category : #output }
+MudTalkClient >> outputSetTextSelector [
+	^ #value:
+]
+
+{ #category : #input }
+MudTalkClient >> processCurrentInput [
+	self processInput: (self inputModel value)
+]
+
+{ #category : #input }
+MudTalkClient >> processInput: aText [
+	| str |
+	str := aText asString shallowCopy.
+	(self runAliases: str) ifFalse: [ self serverText: str ].
+	inputHistory appendCommand: str.
+	self clearInputPane
 ]
 
 { #category : #private }
@@ -322,14 +354,9 @@ MudTalkClient >> serverText: aText [
 ]
 
 { #category : #input }
-MudTalkClient >> setInput: aText [
-	(self runAliases: aText) ifFalse: [ self serverText: aText ].
-	inputHistory appendCommand: aText.
-	self clearInputPane
-]
-
-{ #category : #output }
-MudTalkClient >> setOutput: aModel [
+MudTalkClient >> setInput: aString [ 
+	self inputModel value: aString.
+	self inputModel changed: self inputGetTextSelector.
 ]
 
 { #category : #'client commands' }
