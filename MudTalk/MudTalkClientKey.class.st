@@ -1,6 +1,6 @@
 Class {
 	#name : #MudTalkClientKey,
-	#superclass : #KMKeyCombination,
+	#superclass : #Object,
 	#instVars : [
 		'keyValue',
 		'scanCode'
@@ -69,13 +69,9 @@ MudTalkClientKey >> keyValue: aKeyValue [
 ]
 
 { #category : #matching }
-MudTalkClientKey >> matchesCompletely: evt [
-	^ evt matchesMudTalkKeyBinding: self
-]
-
-{ #category : #accessing }
-MudTalkClientKey >> scanCode [
-	^ scanCode
+MudTalkClientKey >> matchEvent: evt [
+	^ (scanCode isNil or: [scanCode = evt scanCode]) and:
+		[keyValue isNil or: [keyValue = evt keyValue]]
 ]
 
 { #category : #accessing }

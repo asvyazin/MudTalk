@@ -48,6 +48,13 @@ MudTalkClientWindow >> inputPaneHeight [
 	^ 75
 ]
 
+{ #category : #keybindings }
+MudTalkClientWindow >> keyStroke: evt [
+	self eventHandler ifNotNil: [:eventHandler |
+		(eventHandler keyStroke: evt fromMorph: self) ifTrue: [^true]].
+	^ super keyStroke: evt
+]
+
 { #category : #initialization }
 MudTalkClientWindow >> model: aModel [
 	super model: aModel.

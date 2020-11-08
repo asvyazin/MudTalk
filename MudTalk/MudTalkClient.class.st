@@ -14,9 +14,6 @@ Class {
 		'triggers',
 		'aliases'
 	],
-	#classInstVars : [
-		'window'
-	],
 	#category : #'MudTalk-Client'
 }
 
@@ -67,7 +64,8 @@ MudTalkClient >> aliasRegex: rxString do: aBlock [
 
 { #category : #keybinding }
 MudTalkClient >> bindKey: aKey to: anAction [ 
-	window inputPane bindKeyCombination: aKey toAction: anAction
+	keyBindings
+		add: (MudTalkClientKeyBinding new key: aKey action: anAction)
 ]
 
 { #category : #keybinding }
